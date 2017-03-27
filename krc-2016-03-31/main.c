@@ -236,34 +236,34 @@ INITIALISE()
          TEST ARGV[I][0]=='-' THEN
             SWITCHON ARGV[I][1] INTO {
 	    CASE 'n': LOADPRELUDE=FALSE;
-		      ENDCASE
+		      break; 
             CASE 's': SKIPCOMMENTS=TRUE;
-                      ENDCASE
-            CASE 'c': ATCOUNT=TRUE; ENDCASE
-            CASE 'o': ATOBJECT=TRUE; ENDCASE
+                      break; 
+            CASE 'c': ATCOUNT=TRUE; break; 
+            CASE 'o': ATOBJECT=TRUE; break; 
             CASE 'd':		// Handled in listpack.c
             CASE 'l':		// Handled in listpack.c
             CASE 'h': ++I;	// Handled in listpack.c
             CASE 'g':		// Handled in listpack.c
-		      ENDCASE
+		      break; 
             CASE 'e': IF ++I>=ARGC || ARGV[I][0] == '-'
 		      DO {  WRITES("krc: -e What?\n"); FINISH  }
 		      IF EVALUATE
 		      DO {  WRITES("krc: Only one -e flag allowed\n"); FINISH  }
 		      EVALUATE=ARGV[I];
                       QUIET=TRUE;
-                      ENDCASE
+                      break; 
             case 'z': LISTBASE=1;
                       LEGACY=TRUE;
                       WRITES("LISTBASE=1\n");
-                      ENDCASE
-            case 'L': OLDLIB=1; ENDCASE
-//          case 'v': LISTSCRIPT=TRUE; ENDCASE
+                      break; 
+            case 'L': OLDLIB=1; break; 
+//          case 'v': LISTSCRIPT=TRUE; break; 
             // Other parameters may be detected using HAVEPARAM()
             case 'C': case 'N': case 'O': //used only by testcomp, disabled
 	    DEFAULT:  WRITEF("krc: invalid option -%c\n",ARGV[I][1]);
                       FINISH
-		      ENDCASE
+		      break; 
          } OR {
 	    // Filename of script to load, or arguments for script
 	    IF USERSCRIPT==NULL DO USERSCRIPT=ARGV[I]; //was TEST...OR

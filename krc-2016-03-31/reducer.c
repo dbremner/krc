@@ -313,12 +313,12 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
             CASE LOAD_C: // ARGP=ARGP+1;
                          *ARGP=HD(CODE);
                          CODE=TL(CODE);
-                         ENDCASE
+                         break; 
             CASE LOADARG_C: // ARGP=ARGP+1;
             		    IF ARGP>ARGMAX DO SPACE_ERROR("Arg stack overflow");
                             *ARGP=ARG[(WORD)(HD(CODE))];
                             CODE=TL(CODE);
-                            ENDCASE
+                            break; 
             CASE APPLYINFIX_C: *ARGP=CONS(*(ARGP-1),*ARGP);
                                *(ARGP-1)=HD(CODE);
                                CODE=TL(CODE);
@@ -327,15 +327,15 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                                DO {  HD(E)=*ARGP,TL(E)=*(ARGP+1);
                                      RETURN  }
                                *ARGP=CONS(*ARGP,*(ARGP+1));
-                               ENDCASE
+                               break; 
             CASE CONTINUE_INFIX_C: 
                        *(ARGP-1)=CONS(HD(CODE),CONS(*(ARGP-1),*ARGP));
                        CODE=TL(CODE);
-                       ENDCASE
+                       break; 
             CASE IF_C: *ARGP=REDUCE(*ARGP);
                        IF *ARGP==FALSITY DO goto BREAK_DECODE_LOOP;
                        UNLESS *ARGP==TRUTH DO BADEXP(CONS((LIST)GUARD,*ARGP));
-                       ENDCASE
+                       break; 
             CASE FORMLIST_C: // ARGP=ARGP+1;
                              *ARGP=NIL;
                              FOR (I=1; I<=(WORD)HD(CODE); I++)
@@ -344,7 +344,7 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                                         CONS(*ARGP,*(ARGP+1)));
                              }
                              CODE=TL(CODE);
-                             ENDCASE
+                             break; 
             CASE FORMZF_C: {  LIST X=CONS(*(ARGP-(WORD)HD(CODE)),NIL);
 			      LIST *P;
                               FOR (P=ARGP; P>=ARGP-(WORD)HD(CODE)+1; P=P-1)
@@ -352,24 +352,24 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                               ARGP=ARGP-(WORD)HD(CODE);
                               *ARGP=CONS((LIST)ZF_OP,X);
                               CODE=TL(CODE);
-                              ENDCASE  }
+                              break;   }
             CASE CONT_GENERATOR_C:
                   FOR (I=1; I<=(WORD)HD(CODE); I++)
                      *(ARGP-I)=CONS((LIST)GENERATOR,CONS(*(ARGP-I),
                                      TL(TL(*ARGP))));
                   CODE=TL(CODE);
-                  ENDCASE
+                  break; 
             CASE MATCH_C: {  WORD I=(WORD)HD(CODE);
                              CODE=TL(CODE);
                              UNLESS EQUALVAL(ARG[I],HD(CODE)) DO goto BREAK_DECODE_LOOP;
                              CODE=TL(CODE);
-                             ENDCASE  }
+                             break;   }
             CASE MATCHARG_C: {  WORD I=(WORD)HD(CODE);
                                 CODE=TL(CODE);
                                 UNLESS EQUALVAL(ARG[I],ARG[(WORD)(HD(CODE))])
                                 DO goto BREAK_DECODE_LOOP;
                                 CODE=TL(CODE);
-                                ENDCASE  }
+                                break;   }
             CASE MATCHPAIR_C: {  LIST *P=ARG+(WORD)(HD(CODE));
                                  *P=REDUCE(*P);
                                  UNLESS ISCONS(*P) && HD(*P)==(LIST)COLON_OP
@@ -377,9 +377,9 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                                  ARGP=ARGP+2;
                                  *(ARGP-1)=HD(TL(*P)),*ARGP=TL(TL(*P));
                                  CODE=TL(CODE);
-                                 ENDCASE  }
+                                 break;   }
             CASE LINENO_C: CODE=TL(CODE);  //NO ACTION
-                           ENDCASE
+                           break; 
             CASE STOP_C: HD(E)=(LIST)INDIR,TL(E)=*ARGP;
                          RETURN
             CASE CALL_C: (*(VOID (*)())CODE)(E);
@@ -704,7 +704,7 @@ REDUCE(LIST E)
                         LOOP;  }
             CASE ENDOFSTACK: BADEXP((LIST)SILLYNESS); //OCCURS IF WE TRY TO
                                  //EVALUATE AN EXP WE ARE ALREADY INSIDE
-            DEFAULT: ENDCASE  }  //END OF SWITCH
+            DEFAULT: break;   }  //END OF SWITCH
          {  //STRICT OPERATORS
             LIST A=NIL,B=NIL;
 	    BOOL STRINGS=FALSE;
@@ -732,12 +732,12 @@ REDUCE(LIST E)
                {  CASE AND_OP: TEST A==FALSITY THEN E=A; OR
                                TEST A==TRUTH THEN E=B; OR
                                BADEXP(CONS(E,CONS(A,B)));
-					ENDCASE
+					break; 
                   CASE OR_OP:  TEST A==TRUTH THEN E=A; OR
                                TEST A==FALSITY THEN E=B; OR
                                BADEXP(CONS(E,CONS(A,B)));
-					ENDCASE
-                  CASE APPEND_OP: IF A==NIL DO { E=B; ENDCASE }
+					break; 
+                  CASE APPEND_OP: IF A==NIL DO { E=B; break;  }
                                   UNLESS ISCONS(A) && HD(A)==(LIST)COLON_OP
                                   DO BADEXP(CONS(E,CONS(A,B)));
                                   E=(LIST)COLON_OP;
@@ -746,7 +746,7 @@ REDUCE(LIST E)
                                   HD(TL(S))=HD(TL(A));
                                   REDS=REDS+1;
                                   LOOP
-                  CASE DOTDOT_OP: IF M>N DO { E=NIL; ENDCASE }
+                  CASE DOTDOT_OP: IF M>N DO { E=NIL; break;  }
                                   E=(LIST)COLON_OP;
                                   TL(TL(S))=CONS((LIST)DOTDOT_OP,
                                              CONS(STONUM(M+1),B));
@@ -759,7 +759,7 @@ REDUCE(LIST E)
                                           THEN P=GETNUM(C); OR
                                           TEST C==INFINITY THEN P=N1;
                                           OR BADEXP(CONS(E,CONS(A,CONS(B,C))));
-                                          IF (N1-M1)*(P-M1)<0 DO { E=NIL; ENDCASE }
+                                          IF (N1-M1)*(P-M1)<0 DO { E=NIL; break;  }
                                           E=(LIST)COLON_OP;
                                           HD(TL(TL(S)))=STONUM(N1+N1-M1);
                                           TL(TL(S))=CONS((LIST)COMMADOTDOT_OP,
@@ -769,14 +769,14 @@ REDUCE(LIST E)
                   CASE NOT_OP: TEST A==TRUTH THEN E=FALSITY; OR
                                TEST A==FALSITY THEN E=TRUTH; OR
                                BADEXP(CONS(E,A));
-			       ENDCASE
+			       break; 
                   CASE NEG_OP: UNLESS ISNUM(A) DO BADEXP(CONS(E,A));
                                E = STONUM(-GETNUM(A));
-			       ENDCASE
+			       break; 
                   CASE LENGTH_OP: {  WORD L=0;
                                      WHILE ISCONS(A) && HD(A)==(LIST)COLON_OP
                                      DO A=REDUCE(TL(TL(A))),L=L+1;
-                                     IF A==NIL DO { E = STONUM(L); ENDCASE }
+                                     IF A==NIL DO { E = STONUM(L); break;  }
                                      BADEXP(CONS((LIST)COLON_OP,CONS((LIST)ETC,A)));
                                   }
                   CASE PLUS_OP: { WORD X = M+N;
@@ -785,13 +785,13 @@ REDUCE(LIST E)
                                      // This checks for -(2**31)
                                      (X==-X && X!=0) DO
                                         OVERFLOW(CONS((LIST)PLUS_OP,CONS(A,B)));
-                                  E = STONUM(X); ENDCASE  }
+                                  E = STONUM(X); break;   }
                   CASE MINUS_OP: { WORD X = M-N;
                                    IF (M<0 && N>0 && X>0) ||
                                       (M>0 && N<0 && X<0) ||
                                       (X==-X && X!=0) DO
                                         OVERFLOW(CONS((LIST)MINUS_OP,CONS(A,B)));
-                                   E = STONUM(X); ENDCASE  }
+                                   E = STONUM(X); break;   }
                   CASE TIMES_OP: { WORD X = M*N;
 				   // May not catch all cases
                                    IF (M>0 && N>0 && X<=0) ||
@@ -800,11 +800,11 @@ REDUCE(LIST E)
                                       (M>0 && N<0 && X>=0) ||
                                       (X==-X && X!=0) DO
                                         OVERFLOW(CONS((LIST)TIMES_OP,CONS(A,B)));
-                                   E = STONUM(X); ENDCASE  }
+                                   E = STONUM(X); break;   }
                   CASE DIV_OP: IF N==0 DO BADEXP(CONS((LIST)DIV_OP,CONS(A,B)));
-                               E = STONUM(M/N); ENDCASE
+                               E = STONUM(M/N); break; 
                   CASE REM_OP: IF N==0 DO BADEXP(CONS((LIST)REM_OP,CONS(A,B)));
-                               E = STONUM(M%N); ENDCASE
+                               E = STONUM(M%N); break; 
                   CASE EXP_OP:   IF N<0 DO BADEXP(CONS((LIST)EXP_OP,CONS(A,B)));
                               {  WORD P=1;
                                  UNTIL N==0
@@ -817,15 +817,15 @@ REDUCE(LIST E)
                                          (X==-X && X!=0) DO
                                            OVERFLOW(CONS((LIST)EXP_OP,CONS(A,B)));
 				      P=X, N=N-1; }
-                                 E = STONUM(P); ENDCASE  }
+                                 E = STONUM(P); break;   }
                   CASE GR_OP: E = (STRINGS?ALFA_LS(SN,SM):M>N)?
-                                        TRUTH: FALSITY; ENDCASE
+                                        TRUTH: FALSITY; break; 
                   CASE GE_OP: E = (STRINGS?ALFA_LS(SN,SM)||SN==SM:M>=N)?
-                                        TRUTH: FALSITY; ENDCASE
+                                        TRUTH: FALSITY; break; 
                   CASE LE_OP: E = (STRINGS?ALFA_LS(SM,SN)||SM==SN:M<=N)?
-                                        TRUTH: FALSITY; ENDCASE
+                                        TRUTH: FALSITY; break; 
                   CASE LS_OP: E = (STRINGS?ALFA_LS(SM,SN):M<N)?
-                                        TRUTH: FALSITY; ENDCASE
+                                        TRUTH: FALSITY; break; 
                   DEFAULT: WRITES("IMPOSSIBLE OPERATOR IN \"REDUCE\"\n");
                } //END OF SWITCH
          {  LIST HOLD=HD(S);

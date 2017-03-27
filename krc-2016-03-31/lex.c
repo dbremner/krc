@@ -239,16 +239,16 @@ VOID
 WRITETOKEN(TOKEN T)
 {  TEST T<(TOKEN)256 && T>(TOKEN)32 THEN WRCH((WORD)T); OR
    SWITCHON (WORD)T INTO
-   {  CASE (WORD)'\n':   WRITES("newline"); ENDCASE
-      CASE (WORD)PLUSPLUS_SY: WRITES("++"); ENDCASE
-      CASE (WORD)DASHDASH_SY: WRITES("--"); ENDCASE
-      CASE (WORD)STARSTAR_SY: WRITES("**"); ENDCASE
-      CASE (WORD)GE_SY:       WRITES(">="); ENDCASE
-      CASE (WORD)LE_SY:       WRITES("<="); ENDCASE
-      CASE (WORD)NE_SY:       WRITES("\\="); ENDCASE
-      CASE (WORD)EQ_SY:       WRITES("=="); ENDCASE 
-      CASE (WORD)BACKARROW_SY: WRITES("<-"); ENDCASE
-      CASE (WORD)DOTDOT_SY: WRITES(".."); ENDCASE
+   {  CASE (WORD)'\n':   WRITES("newline"); break; 
+      CASE (WORD)PLUSPLUS_SY: WRITES("++"); break; 
+      CASE (WORD)DASHDASH_SY: WRITES("--"); break; 
+      CASE (WORD)STARSTAR_SY: WRITES("**"); break; 
+      CASE (WORD)GE_SY:       WRITES(">="); break; 
+      CASE (WORD)LE_SY:       WRITES("<="); break; 
+      CASE (WORD)NE_SY:       WRITES("\\="); break; 
+      CASE (WORD)EQ_SY:       WRITES("=="); break;  
+      CASE (WORD)BACKARROW_SY: WRITES("<-"); break; 
+      CASE (WORD)DOTDOT_SY: WRITES(".."); break; 
       DEFAULT: TEST !(ISCONS(T) && (HD(T)==IDENT || HD(T)==CONST))
 	       THEN WRITEF("<UNKNOWN TOKEN<%p>>",T); OR
 	       TEST HD(T)==IDENT

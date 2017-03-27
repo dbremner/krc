@@ -57,7 +57,7 @@ typedef WORD BOOL;	// Not BCPL but...
 #define INTO )
 #define CASE case
 #define DEFAULT default
-#define ENDCASE break;
+//#define ENDCASE break;
 #define GOTO goto
 
 // Implement BCPL I/O system using stdio
