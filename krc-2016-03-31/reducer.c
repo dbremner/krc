@@ -302,14 +302,14 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
          do{LIST H = HD(CODE);  //DECODE LOOP
             CODE=TL(CODE);
             // First, check the only cases that increment ARGP
-            SWITCHON (WORD)H ) {
+            switch(  (WORD)H ) {
             case LOAD_C:
             case LOADARG_C:
             case FORMLIST_C:
 	       ARGP=ARGP+1;
                IF ARGP>ARGMAX DO SPACE_ERROR("Arg stack overflow");
                                   }
-            SWITCHON (WORD)H ) {
+            switch(  (WORD)H ) {
             case LOAD_C: // ARGP=ARGP+1;
                          *ARGP=HD(CODE);
                          CODE=TL(CODE);
@@ -607,7 +607,7 @@ REDUCE(LIST E)
                  ARGP=ARG-1;  //RESET ARG STACK
               } }
       OR {  //OPERATORS
-            SWITCHON (WORD)E )
+            switch(  (WORD)E )
          {  case QUOTE: UNLESS NARGS==1 DO HOLDARG=(LIST *)-1;
                         goto BREAK_MAIN_LOOP;
             case INDIR: {  LIST HOLD=HD(S);
@@ -728,7 +728,7 @@ REDUCE(LIST E)
                        }
                   OR B=TL(TL(S));  //NO
                }
-               SWITCHON (WORD)E )
+               switch(  (WORD)E )
                {  case AND_OP: TEST A==FALSITY THEN E=A; OR
                                TEST A==TRUTH THEN E=B; OR
                                BADEXP(CONS(E,CONS(A,B)));

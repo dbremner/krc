@@ -53,7 +53,7 @@ typedef WORD BOOL;	// Not BCPL but...
 #define BREAK break;
 #define LOOP continue;
 #define FINISH exit(0);
-#define SWITCHON switch(
+//#define SWITCHON switch(
 //#define INTO )
 //#define CASE case
 //#define DEFAULT default

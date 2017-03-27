@@ -338,7 +338,7 @@ DISPLAYRHS(LIST LHS, WORD NARGS, LIST CODE)
 	 LHS = HD(LHS); }
    I = NARGS-1;
    do
-   {  SWITCHON (WORD)(HD(CODE)) )
+   {  switch(  (WORD)(HD(CODE)) )
       {  case LOAD_C: CODE=TL(CODE);
                       I=I+1;
                       V[I]=HD(CODE);
