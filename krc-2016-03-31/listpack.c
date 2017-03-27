@@ -126,7 +126,7 @@ main(int argc, char **argv)
       // Handle command line arguments that affect this file
       FOR (I=1; I<ARGC; I++) {
          IF ARGV[I][0]=='-' DO
-            SWITCHON ARGV[I][1] INTO {
+            SWITCHON ARGV[I][1] ) {
             case 'g': ATGC=TRUE; break; 
             case 'h': IF ++I>=ARGC || (SPACE=atoi(ARGV[I]))<=0 DO {
                       WRITES("krc: -h What?\n"); FINISH  }

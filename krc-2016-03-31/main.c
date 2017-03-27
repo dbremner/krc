@@ -234,7 +234,7 @@ INITIALISE()
       SETUP_PRIMFNS_ETC();
       FOR (I=1; I<ARGC; I++) {
          TEST ARGV[I][0]=='-' THEN
-            SWITCHON ARGV[I][1] INTO {
+            SWITCHON ARGV[I][1] ) {
 	    case 'n': LOADPRELUDE=FALSE;
 		      break; 
             case 's': SKIPCOMMENTS=TRUE;

@@ -238,7 +238,7 @@ PEEKALPHA()
 VOID
 WRITETOKEN(TOKEN T)
 {  TEST T<(TOKEN)256 && T>(TOKEN)32 THEN WRCH((WORD)T); OR
-   SWITCHON (WORD)T INTO
+   SWITCHON (WORD)T )
    {  case (WORD)'\n':   WRITES("newline"); break; 
       case (WORD)PLUSPLUS_SY: WRITES("++"); break; 
       case (WORD)DASHDASH_SY: WRITES("--"); break; 
