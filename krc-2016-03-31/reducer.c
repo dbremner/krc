@@ -333,7 +333,7 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                        CODE=TL(CODE);
                        ENDCASE
             CASE IF_C: *ARGP=REDUCE(*ARGP);
-                       IF *ARGP==FALSITY DO GOTO BREAK_DECODE_LOOP;
+                       IF *ARGP==FALSITY DO goto BREAK_DECODE_LOOP;
                        UNLESS *ARGP==TRUTH DO BADEXP(CONS((LIST)GUARD,*ARGP));
                        ENDCASE
             CASE FORMLIST_C: // ARGP=ARGP+1;
@@ -361,19 +361,19 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                   ENDCASE
             CASE MATCH_C: {  WORD I=(WORD)HD(CODE);
                              CODE=TL(CODE);
-                             UNLESS EQUALVAL(ARG[I],HD(CODE)) DO GOTO BREAK_DECODE_LOOP;
+                             UNLESS EQUALVAL(ARG[I],HD(CODE)) DO goto BREAK_DECODE_LOOP;
                              CODE=TL(CODE);
                              ENDCASE  }
             CASE MATCHARG_C: {  WORD I=(WORD)HD(CODE);
                                 CODE=TL(CODE);
                                 UNLESS EQUALVAL(ARG[I],ARG[(WORD)(HD(CODE))])
-                                DO GOTO BREAK_DECODE_LOOP;
+                                DO goto BREAK_DECODE_LOOP;
                                 CODE=TL(CODE);
                                 ENDCASE  }
             CASE MATCHPAIR_C: {  LIST *P=ARG+(WORD)(HD(CODE));
                                  *P=REDUCE(*P);
                                  UNLESS ISCONS(*P) && HD(*P)==(LIST)COLON_OP
-                                 DO GOTO BREAK_DECODE_LOOP;
+                                 DO goto BREAK_DECODE_LOOP;
                                  ARGP=ARGP+2;
                                  *(ARGP-1)=HD(TL(*P)),*ARGP=TL(TL(*P));
                                  CODE=TL(CODE);
@@ -580,7 +580,7 @@ REDUCE(LIST E)
             HD(E)=S,S=E,E=HOLD;  }
       IF ISNUM(E) || E==NIL
       DO {  // UNLESS NARGS==0 DO HOLDARG=(LIST *)-1;  //FLAGS AN ERROR
-            GOTO BREAK_MAIN_LOOP;  }
+            goto BREAK_MAIN_LOOP;  }
       TEST ISATOM(E)  //USER DEFINED NAME
       THEN TEST VAL((ATOM)E)==NIL || TL(VAL((ATOM)E))==NIL THEN BADEXP(E); OR  //UNDEFINED NAME
       TEST HD(HD(VAL((ATOM)E)))==0  //VARIABLE
@@ -591,7 +591,7 @@ REDUCE(LIST E)
               E=HD(EQN);  }  //?CAN WE GET CYCLIC EXPRESSIONS?
       OR {  //FUNCTION
                  WORD N=(WORD)HD(HD(VAL((ATOM)E)));	// Hides the static N
-                 IF N>NARGS DO GOTO BREAK_MAIN_LOOP;  //NOT ENOUGH ARGS
+                 IF N>NARGS DO goto BREAK_MAIN_LOOP;  //NOT ENOUGH ARGS
               {  LIST EQNS=TL(VAL((ATOM)E));
 		 WORD I;
                  FOR (I=0; I<=N-1; I++)
@@ -609,12 +609,12 @@ REDUCE(LIST E)
       OR {  //OPERATORS
             SWITCHON (WORD)E INTO
          {  CASE QUOTE: UNLESS NARGS==1 DO HOLDARG=(LIST *)-1;
-                        GOTO BREAK_MAIN_LOOP;
+                        goto BREAK_MAIN_LOOP;
             CASE INDIR: {  LIST HOLD=HD(S);
                            NARGS=NARGS-1;
                            E=TL(S),HD(S)=(LIST)INDIR,S=HOLD;
                            LOOP;  }
-            CASE QUOTE_OP: UNLESS NARGS>=3 DO GOTO BREAK_MAIN_LOOP;
+            CASE QUOTE_OP: UNLESS NARGS>=3 DO goto BREAK_MAIN_LOOP;
                         {  LIST OP=TL(S);
                            LIST HOLD=HD(S);
                            NARGS=NARGS-2;
@@ -626,14 +626,14 @@ REDUCE(LIST E)
             CASE LISTDIFF_OP: E=CONS((LIST)LISTDIFF,HD(TL(S)));
                               TL(S)=TL(TL(S));
                               LOOP;
-            CASE COLON_OP: UNLESS NARGS>=2 DO GOTO BREAK_MAIN_LOOP;
+            CASE COLON_OP: UNLESS NARGS>=2 DO goto BREAK_MAIN_LOOP;
                            //LIST INDEXING
                            NARGS=NARGS-2;
                         {  LIST HOLD=HD(S); WORD M; //Hides static M
                            HD(S)=(LIST)COLON_OP,E=S,S=HOLD;
                            TL(S)=REDUCE(TL(S));
                            UNLESS ISNUM(TL(S)) && (M=GETNUM(TL(S)))>=LISTBASE
-                           DO { HOLDARG=(LIST *)-1; GOTO BREAK_MAIN_LOOP; }
+                           DO { HOLDARG=(LIST *)-1; goto BREAK_MAIN_LOOP; }
                            WHILE M-- > LISTBASE
                            DO { E=REDUCE(TL(TL(E))); //Clobbers static M
                                 UNLESS ISCONS(E) && HD(E)==(LIST)COLON_OP
@@ -685,7 +685,7 @@ REDUCE(LIST E)
                          DO {  LIST A=REDUCE(HD(TL(S))),B=REDUCE(TL(TL(S)));
                                UNLESS ISFUN(A) && ISFUN(B)
                                DO BADEXP(CONS(E,CONS(A,B)));
-                               GOTO BREAK_MAIN_LOOP;  }
+                               goto BREAK_MAIN_LOOP;  }
                       {  LIST HOLD=HD(S);
                          NARGS=NARGS-1;
                          E=HD(TL(S)),TL(HOLD)=CONS(TL(TL(S)),TL(HOLD));
