@@ -249,7 +249,7 @@ WRITETOKEN(TOKEN T)
       CASE (WORD)EQ_SY:       WRITES("=="); break;  
       CASE (WORD)BACKARROW_SY: WRITES("<-"); break; 
       CASE (WORD)DOTDOT_SY: WRITES(".."); break; 
-      DEFAULT: TEST !(ISCONS(T) && (HD(T)==IDENT || HD(T)==CONST))
+      default: TEST !(ISCONS(T) && (HD(T)==IDENT || HD(T)==CONST))
 	       THEN WRITEF("<UNKNOWN TOKEN<%p>>",T); OR
 	       TEST HD(T)==IDENT
 	       THEN WRITES(PRINTNAME((ATOM)(

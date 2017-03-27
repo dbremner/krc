@@ -261,7 +261,7 @@ INITIALISE()
 //          case 'v': LISTSCRIPT=TRUE; break; 
             // Other parameters may be detected using HAVEPARAM()
             case 'C': case 'N': case 'O': //used only by testcomp, disabled
-	    DEFAULT:  WRITEF("krc: invalid option -%c\n",ARGV[I][1]);
+	    default:  WRITEF("krc: invalid option -%c\n",ARGV[I][1]);
                       FINISH
 		      break; 
          } OR {

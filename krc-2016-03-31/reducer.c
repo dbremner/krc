@@ -384,7 +384,7 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                          RETURN
             CASE CALL_C: (*(VOID (*)())CODE)(E);
                          RETURN
-            DEFAULT: WRITEF("IMPOSSIBLE INSTRUCTION <%p> IN \"OBEY\"\n", H);
+            default: WRITEF("IMPOSSIBLE INSTRUCTION <%p> IN \"OBEY\"\n", H);
          }  }  REPEAT  //END OF DECODE LOOP
 BREAK_DECODE_LOOP:
          EQNS=TL(EQNS);
@@ -704,7 +704,7 @@ REDUCE(LIST E)
                         LOOP;  }
             CASE ENDOFSTACK: BADEXP((LIST)SILLYNESS); //OCCURS IF WE TRY TO
                                  //EVALUATE AN EXP WE ARE ALREADY INSIDE
-            DEFAULT: break;   }  //END OF SWITCH
+            default: break;   }  //END OF SWITCH
          {  //STRICT OPERATORS
             LIST A=NIL,B=NIL;
 	    BOOL STRINGS=FALSE;
@@ -826,7 +826,7 @@ REDUCE(LIST E)
                                         TRUTH: FALSITY; break; 
                   CASE LS_OP: E = (STRINGS?ALFA_LS(SM,SN):M<N)?
                                         TRUTH: FALSITY; break; 
-                  DEFAULT: WRITES("IMPOSSIBLE OPERATOR IN \"REDUCE\"\n");
+                  default: WRITES("IMPOSSIBLE OPERATOR IN \"REDUCE\"\n");
                } //END OF SWITCH
          {  LIST HOLD=HD(S);
             NARGS=NARGS-1;

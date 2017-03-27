@@ -398,7 +398,7 @@ DISPLAYRHS(LIST LHS, WORD NARGS, LIST CODE)
                       WRITES(", ");
                       PRINTEXP(V[I-1],0);
                       RETURN
-         DEFAULT: WRITES("IMPOSSIBLE INSTRUCTION IN \"DISPLAYRHS\"\n");
+         default: WRITES("IMPOSSIBLE INSTRUCTION IN \"DISPLAYRHS\"\n");
       } //END OF SWITCH
       CODE=TL(CODE);
    } REPEAT;
