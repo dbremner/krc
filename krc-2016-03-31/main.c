@@ -235,18 +235,18 @@ INITIALISE()
       FOR (I=1; I<ARGC; I++) {
          TEST ARGV[I][0]=='-' THEN
             SWITCHON ARGV[I][1] INTO {
-	    CASE 'n': LOADPRELUDE=FALSE;
+	    case 'n': LOADPRELUDE=FALSE;
 		      break; 
-            CASE 's': SKIPCOMMENTS=TRUE;
+            case 's': SKIPCOMMENTS=TRUE;
                       break; 
-            CASE 'c': ATCOUNT=TRUE; break; 
-            CASE 'o': ATOBJECT=TRUE; break; 
-            CASE 'd':		// Handled in listpack.c
-            CASE 'l':		// Handled in listpack.c
-            CASE 'h': ++I;	// Handled in listpack.c
-            CASE 'g':		// Handled in listpack.c
+            case 'c': ATCOUNT=TRUE; break; 
+            case 'o': ATOBJECT=TRUE; break; 
+            case 'd':		// Handled in listpack.c
+            case 'l':		// Handled in listpack.c
+            case 'h': ++I;	// Handled in listpack.c
+            case 'g':		// Handled in listpack.c
 		      break; 
-            CASE 'e': IF ++I>=ARGC || ARGV[I][0] == '-'
+            case 'e': IF ++I>=ARGC || ARGV[I][0] == '-'
 		      DO {  WRITES("krc: -e What?\n"); FINISH  }
 		      IF EVALUATE
 		      DO {  WRITES("krc: Only one -e flag allowed\n"); FINISH  }

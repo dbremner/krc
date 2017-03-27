@@ -339,30 +339,30 @@ DISPLAYRHS(LIST LHS, WORD NARGS, LIST CODE)
    I = NARGS-1;
    do
    {  SWITCHON (WORD)(HD(CODE)) INTO
-      {  CASE LOAD_C: CODE=TL(CODE);
+      {  case LOAD_C: CODE=TL(CODE);
                       I=I+1;
                       V[I]=HD(CODE);
                       break; 
-         CASE LOADARG_C: CODE=TL(CODE);
+         case LOADARG_C: CODE=TL(CODE);
                          I=I+1;
                          V[I]=V[(WORD)(HD(CODE))];
                          break; 
-         CASE APPLY_C: I=I-1;
+         case APPLY_C: I=I-1;
                        V[I]=CONS(V[I],V[I+1]);
                        break; 
-         CASE APPLYINFIX_C: CODE=TL(CODE);
+         case APPLYINFIX_C: CODE=TL(CODE);
                             I=I-1;
                             V[I]=CONS(HD(CODE),CONS(V[I],V[I+1]));
                             break; 
-         CASE CONTINUE_INFIX_C: CODE=TL(CODE);
+         case CONTINUE_INFIX_C: CODE=TL(CODE);
                                 V[I-1]=CONS(HD(CODE),
                                           CONS(V[I-1],V[I]));
                          //NOTE THAT 2ND ARG IS LEFT IN PLACE ABOVE
                          //NEW EXPRESSION
                                 break; 
-         CASE IF_C: IF_FLAG=TRUE;
+         case IF_C: IF_FLAG=TRUE;
                     break; 
-         CASE FORMLIST_C: CODE=TL(CODE);
+         case FORMLIST_C: CODE=TL(CODE);
                           I=I+1;
                           V[I]=NIL;
                           FOR (J=1; J<=(WORD)(HD(CODE)); J++)
@@ -370,30 +370,30 @@ DISPLAYRHS(LIST LHS, WORD NARGS, LIST CODE)
                                 V[I]=CONS((LIST)COLON_OP,CONS(V[I],V[I+1]));
                              }
                           break; 
-         CASE FORMZF_C: CODE=TL(CODE);
+         case FORMZF_C: CODE=TL(CODE);
                         I=I-(WORD)(HD(CODE));
                         V[I]=CONS(V[I],NIL);
                         FOR (J=(WORD)(HD(CODE)); J>=1; J=J-1)
                            V[I] = CONS(V[I+J],V[I]);
                         V[I] = CONS((LIST)ZF_OP,V[I]);
                         break; 
-         CASE CONT_GENERATOR_C:
+         case CONT_GENERATOR_C:
                 CODE = TL(CODE);
                 FOR (J=1; J<=(WORD)(HD(CODE)); J++)
                    V[I-J] = CONS((LIST)GENERATOR,CONS(V[I-J],
                                     TL(TL(V[I]))));
                 break; 
-         CASE MATCH_C:
-         CASE MATCHARG_C:
+         case MATCH_C:
+         case MATCHARG_C:
                        CODE=TL(CODE);
                        CODE=TL(CODE);
                        break; 
-         CASE MATCHPAIR_C: CODE=TL(CODE);
+         case MATCHPAIR_C: CODE=TL(CODE);
                         {  LIST X = V[(WORD)HD(CODE)];
                            I=I+2;
                            V[I-1]=HD(TL(X)), V[I]=TL(TL(X));  }
                            break; 
-         CASE STOP_C: PRINTEXP(V[I],0);
+         case STOP_C: PRINTEXP(V[I],0);
                       UNLESS IF_FLAG DO RETURN
                       WRITES(", ");
                       PRINTEXP(V[I-1],0);

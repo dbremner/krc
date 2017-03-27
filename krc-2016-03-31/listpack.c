@@ -127,15 +127,15 @@ main(int argc, char **argv)
       FOR (I=1; I<ARGC; I++) {
          IF ARGV[I][0]=='-' DO
             SWITCHON ARGV[I][1] INTO {
-            CASE 'g': ATGC=TRUE; break; 
-            CASE 'h': IF ++I>=ARGC || (SPACE=atoi(ARGV[I]))<=0 DO {
+            case 'g': ATGC=TRUE; break; 
+            case 'h': IF ++I>=ARGC || (SPACE=atoi(ARGV[I]))<=0 DO {
                       WRITES("krc: -h What?\n"); FINISH  }
                       break; 
-            CASE 'l': TEST ++I>=ARGC //doesn't logically belong in listpack
+            case 'l': TEST ++I>=ARGC //doesn't logically belong in listpack
                       THEN { WRITES("krc: -l What?\n"); FINISH  }
                       OR USERLIB=ARGV[I];
                       break; 
-            CASE 'd': IF ++I>=ARGC || (DICMAX=atoi(ARGV[I]))<=0 DO {
+            case 'd': IF ++I>=ARGC || (DICMAX=atoi(ARGV[I]))<=0 DO {
                       WRITES("krc: -d What?\n"); FINISH  }
                       break; 
 	    }
