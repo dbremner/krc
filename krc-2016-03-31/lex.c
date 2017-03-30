@@ -57,9 +57,9 @@ READLINE()
       // Ignore first line of Unix script file
       IF HD(TOKENS)==(LIST)'#' && ISCONS(TL(TOKENS)) &&
          HD(TL(TOKENS))==(LIST)'!' DO LOOP;
-      IF T==(TOKEN)EOL || T==(TOKEN)ENDSTREAMCH DO RETURN
+      IF T==(TOKEN)EOL || T==(TOKEN)ENDSTREAMCH DO return;
       WRITES("Closing quote missing - line ignored\n");
-      ERRORFLAG=TRUE; RETURN
+      ERRORFLAG=TRUE; return;
    } REPEAT;
 }
 
@@ -268,7 +268,7 @@ HAVE(TOKEN T)
 
 VOID
 CHECK(TOKEN T)
-{ IF HAVE(T) DO RETURN
+{ IF HAVE(T) DO return;
   ERRORFLAG=TRUE;
   IF MISSING==0 DO MISSING=T; }
 

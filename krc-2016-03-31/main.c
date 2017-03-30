@@ -89,7 +89,7 @@ static VOID
 CATCHINTERRUPT(int signum)
 {  IF INTERRUPTS_ARE_HELD DO {
       INTERRUPT_OCCURRED = signum;	// Can't be 0
-      RETURN
+      return;
    }
    FIXUP_S();	   //IN CASE INTERRUPT STRUCK WHILE REDUCE
                    //WAS DISSECTING A CONSTANT
@@ -502,11 +502,11 @@ HELPCOM()
   THEN { TEST local
          THEN r=system(HELPLOCAL "menu");
          OR r=system(HELP "menu");
-         RETURN }
+         return; }
   topic = HAVEID()?PRINTNAME(THE_ID):NULL;
   UNLESS topic && HAVE(EOL)
   DO { WRITES("/h What? `/h' for options\n");
-       RETURN }
+       return; }
   strncpy(strbuf,local?HELPLOCAL:HELP,BUFLEN);
   strncat(strbuf,topic,BUFLEN-strlen(strbuf));
   r=system(strbuf); }
@@ -519,7 +519,7 @@ COMMAND()
       char *line=linenoise(QUIET ? "" : prompt);
       if (line && line[0] == '\0') return;      // Otherwise the interpreter exits
       PARSELINE(line);                          // Handles NULL->EOF OK
-      IF HAVE(EOL) DO { free(line); RETURN }   //IGNORE BLANK LINES
+      IF HAVE(EOL) DO { free(line); return; }   //IGNORE BLANK LINES
       if (line) {
          linenoiseHistoryAdd(line);
          free(line);
@@ -527,7 +527,7 @@ COMMAND()
 #else
       IF !QUIET DO PROMPT(prompt); // ON EMAS PROMPTS REMAIN IN EFFECT UNTIL CANCELLED
       READLINE();
-      IF HAVE(EOL) DO RETURN //IGNORE BLANK LINES
+      IF HAVE(EOL) DO return; //IGNORE BLANK LINES
       SUPPRESSPROMPTS();  // CANCEL PROMPT (IN CASE COMMAND READS DATA)
 #endif
       TEST HAVE((TOKEN)EOF)
@@ -604,7 +604,7 @@ PRIMITIVE(ATOM A)
 static VOID
 QUITCOM()
    {  IF TOKENS!=NIL DO CHECK(EOL);
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
       IF MAKESURE()
       DO { WRITES("krc logout\n");
            FINISH  }
@@ -642,10 +642,10 @@ COUNTCOM()
 static VOID
 SAVECOM()
    {  FILENAME();
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
       IF SCRIPT==NIL
       DO {  WRITES("Cannot save empty script\n");
-            RETURN  }
+            return;  }
    {  
       FILE *OUT = FINDOUTPUT("T#SCRIPT");
       SELECTOUTPUT(OUT);
@@ -695,7 +695,7 @@ static VOID
 GETCOM()
    {  BOOL CLEAN = SCRIPT==NIL;
       FILENAME();
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
       HOLDSCRIPT=SCRIPT,SCRIPT=NIL,GET_HITS=NIL;
       GETFILE(PRINTNAME(THE_ID));
       CHECK_HITS();
@@ -741,10 +741,10 @@ GETFILE(char *FILENAME)
 static VOID
 LISTCOM()
    {  FILENAME();
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
    {  char *FNAME=PRINTNAME(THE_ID);
       FILE *IN=FINDINPUT(FNAME);
-      UNLESS OKFILE(IN,FNAME) DO RETURN
+      UNLESS OKFILE(IN,FNAME) DO return;
       SELECTINPUT(IN);
    {  WORD CH=RDCH();
       UNTIL CH==EOF
@@ -756,7 +756,7 @@ LISTCOM()
 static VOID
 NAMESCOM()
    {  CHECK(EOL);
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
       TEST SCRIPT==NIL
       THEN DISPLAYALL(FALSE);
       OR  {  SCRIPTLIST(SCRIPT); FIND_UNDEFS();  }
@@ -788,7 +788,7 @@ ISDEFINED(ATOM X)
 static VOID
 LIBCOM()
    {  CHECK(EOL);
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
       TEST LIBSCRIPT==NIL
       THEN WRITES("library = empty\n");
       OR SCRIPTLIST(LIBSCRIPT);  }
@@ -796,7 +796,7 @@ LIBCOM()
 static VOID
 CLEARCOM()
    {  CHECK(EOL);
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
       CLEARMEMORY();  }
 
 static VOID
@@ -819,7 +819,7 @@ SCRIPTLIST(LIST S)
 static VOID
 OPENLIBCOM()
    {  CHECK(EOL);
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
       SAVED=SCRIPT==NIL;
       SCRIPT=APPEND(SCRIPT,LIBSCRIPT);
       LIBSCRIPT=NIL;
@@ -832,11 +832,11 @@ RENAMECOM()
       CHECK((TOKEN)',');
       WHILE HAVEID() DO Y=CONS((LIST)THE_ID,Y);
       CHECK(EOL);
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
       {  //FIRST CHECK LISTS ARE OF SAME LENGTH
          LIST X1=X,Y1=Y;
          UNTIL X1==NIL||Y1==NIL DO Z=CONS(CONS(HD(X1),HD(Y1)),Z),X1=TL(X1),Y1=TL(Y1);
-         UNLESS X1==NIL && Y1==NIL && Z!=NIL DO { SYNTAX(); RETURN  }  }
+         UNLESS X1==NIL && Y1==NIL && Z!=NIL DO { SYNTAX(); return;  }  }
       {  // NOW CHECK LEGALITY OF RENAME
          LIST Z1=Z,POSTDEFS=NIL,DUPS=NIL;
          UNTIL Z1==NIL
@@ -856,7 +856,7 @@ RENAMECOM()
                       WRCH(' ');
                       DUPS=TL(DUPS);  }
                NEWLINE();
-               RETURN  }  }
+               return;  }  }
       HOLD_INTERRUPTS();
       CLEARMEMORY();
     //PREPARE FOR ASSIGNMENT TO VAL FIELDS
@@ -906,7 +906,7 @@ NEWEQUATION()
       DO {  EQNO=100*THE_NUM+THE_DECIMALS;
             CHECK((TOKEN)')');  }
    {  LIST X=EQUATION();
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
    {  ATOM SUBJECT=(ATOM)HD(X);
       WORD NARGS=(WORD)HD(TL(X));
       LIST EQN=TL(TL(X));
@@ -915,7 +915,7 @@ NEWEQUATION()
       THEN {  VAL(SUBJECT)=CONS(CONS((LIST)NARGS,NIL),CONS(EQN,NIL));
               ENTERSCRIPT(SUBJECT);  } OR
       TEST PROTECTED(SUBJECT)
-      THEN RETURN  OR
+      THEN return;  OR
       TEST TL(VAL(SUBJECT))==NIL  //SUBJECT CURRENTLY DEFINED ONLY BY A COMMENT
       THEN {  HD(HD(VAL(SUBJECT)))=(LIST)NARGS;
               TL(VAL(SUBJECT))=CONS(EQN,NIL);  } OR
@@ -925,7 +925,7 @@ NEWEQUATION()
       TEST NARGS!=(WORD)HD(HD(VAL(SUBJECT)))
       THEN {  WRITEF("Wrong no of args for \"%s\"\n",PRINTNAME(SUBJECT));
               WRITES("Equation rejected\n");
-              RETURN  } OR
+              return;  } OR
       TEST EQNO==-1  //UNNUMBERED EQN
       THEN {  LIST EQNS=TL(VAL(SUBJECT));
               LIST P=PROFILE(EQN);
@@ -993,7 +993,7 @@ COMMENT()
       IF VAL(SUBJECT)==NIL
       DO {  VAL(SUBJECT)=CONS(CONS(0,NIL),NIL);
             ENTERSCRIPT(SUBJECT); }
-      IF PROTECTED(SUBJECT) DO RETURN
+      IF PROTECTED(SUBJECT) DO return;
       TL(HD(VAL(SUBJECT)))=COMMENT;
       IF COMMENT==NIL && TL(VAL(SUBJECT))==NIL
       DO REMOVE(SUBJECT);
@@ -1006,7 +1006,7 @@ EVALUATION()
       WORD CH=(WORD)HD(TOKENS);
       LIST E=0;  //STATIC SO INVISIBLE TO GARBAGE COLLECTOR
       UNLESS HAVE((TOKEN)'!') DO CHECK((TOKEN)'?');
-      IF ERRORFLAG DO RETURN;
+      IF ERRORFLAG DO return;;
       CHECK(EOL);
       IF ATOBJECT DO {  PRINTOB(CODE) ; NEWLINE();  }
       E=BUILDEXP(CODE);
@@ -1058,11 +1058,11 @@ REORDERCOM()
                     //NOS OUT OF RANGE ARE SILENTLY IGNORED
               }
            CHECK(EOL);
-           IF ERRORFLAG DO RETURN
+           IF ERRORFLAG DO return;
            IF VAL(THE_ID)==NIL
            DO {  DISPLAY(THE_ID,FALSE,FALSE);
-                 RETURN  }
-           IF PROTECTED(THE_ID) DO RETURN
+                 return;  }
+           IF PROTECTED(THE_ID) DO return;
            {  WORD I;
 	      FOR (I=1; I<= MAX; I++)
               UNLESS MEMBER(NOS,(LIST)I)
@@ -1102,7 +1102,7 @@ SCRIPTREORDER()
             OR {  WRITEF("\"%s\" not in script\n",PRINTNAME(THE_ID));
                   SYNTAX();  }
       CHECK(EOL);
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
    {  LIST R1 = NIL;
       UNTIL TL(R)==NIL
       DO {  UNLESS MEMBER(TL(R),HD(R)) DO SCRIPT=SUB1(SCRIPT,(ATOM)HD(R)), R1=CONS(HD(R),R1);
@@ -1165,12 +1165,12 @@ DELETECOM()
             DLIST=CONS(CONS((LIST)THE_ID,NLIST),DLIST);
          }
       CHECK(EOL);
-      IF ERRORFLAG DO RETURN
+      IF ERRORFLAG DO return;
    {  WORD DELS = 0;
       IF DLIST==NIL   //DELETE ALL
       DO {
 	 TEST SCRIPT==NIL THEN DISPLAYALL(FALSE); OR
-         {  UNLESS MAKESURE() DO RETURN
+         {  UNLESS MAKESURE() DO return;
             UNTIL SCRIPT==NIL
             DO {  DELS=DELS + NO_OF_EQNS((ATOM)HD(SCRIPT));
                   VAL((ATOM)HD(SCRIPT))=NIL;

@@ -340,7 +340,7 @@ COPY(LIST *P)  // P IS THE ADDRESS OF A LIST FIELD
    WHILE CONSBASE<=*P && *P<CONSLIMIT
    DO {  IF HD(*P)==GONETO
          DO {  *P=TL(*P);
-               RETURN }
+               return; }
       {  LIST X=HD(*P);
          LIST Y=TL(*P);
          LIST Z=CONSP;
@@ -349,7 +349,7 @@ COPY(LIST *P)  // P IS THE ADDRESS OF A LIST FIELD
          *P=Z;
          HD(Z)=X, TL(Z)=Y;
          CONSP=CONSP+1;
-         IF X==FULLWORD DO RETURN
+         IF X==FULLWORD DO return;
          P=&(TL(Z));  }  }  }
 
 static void

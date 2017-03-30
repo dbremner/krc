@@ -325,7 +325,7 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
             case APPLY_C:      ARGP=ARGP-1;
                                IF HD(CODE)==(LIST)STOP_C
                                DO {  HD(E)=*ARGP,TL(E)=*(ARGP+1);
-                                     RETURN  }
+                                     return;  }
                                *ARGP=CONS(*ARGP,*(ARGP+1));
                                break; 
             case CONTINUE_INFIX_C: 
@@ -381,9 +381,9 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
             case LINENO_C: CODE=TL(CODE);  //NO ACTION
                            break; 
             case STOP_C: HD(E)=(LIST)INDIR,TL(E)=*ARGP;
-                         RETURN
+                         return;
             case CALL_C: (*(VOID (*)())CODE)(E);
-                         RETURN
+                         return;
             default: WRITEF("IMPOSSIBLE INSTRUCTION <%p> IN \"OBEY\"\n", H);
          }  }  REPEAT  //END OF DECODE LOOP
 BREAK_DECODE_LOOP:

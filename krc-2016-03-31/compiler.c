@@ -131,7 +131,7 @@ PRINTEXP(LIST E, WORD N)    // N IS THE PRIORITY LEVEL
          DO {  TEST E==(LIST)NOT_OP THEN WRITES("'\\'"); OR
                TEST E==(LIST)LENGTH_OP THEN WRITES("'#'");
                OR WRITEF("<internal value:%p>",E);
-               RETURN }
+               return; }
       {  LIST OP=HD(E);		// Maybe could be OPERATOR
          TEST !ISOP(OP) && N<=7
          THEN {  PRINTEXP(OP,7);
@@ -278,7 +278,7 @@ DISPLAY(ATOM ID, BOOL WITHNOS, BOOL DOUBLESPACING)
                 // CONTAINS - CONS(CONS(NARGS,COMMENT),<LIST OF EQNS>)
    {  IF VAL(ID)==NIL
       DO {  WRITEF("\"%s\" - not defined\n",PRINTNAME(ID));
-            RETURN }
+            return; }
    {  LIST X = HD(VAL(ID)), EQNS = TL(VAL(ID));
       WORD NARGS = (WORD)(HD(X));
       LIST COMMENT = TL(X);
@@ -297,7 +297,7 @@ DISPLAY(ATOM ID, BOOL WITHNOS, BOOL DOUBLESPACING)
             WRITES(";\n");
             IF DOUBLESPACING DO NEWLINE();  }
       IF COMMENT!=NIL && N==1 && HD(TL(HD(EQNS)))==(LIST)CALL_C 
-	 DO RETURN
+	 DO return;
       FOR (I=1; I<=N; I++)
          {  TEST WITHNOS && (N>1 || COMMENT!=NIL)
             THEN WRITEF("%2" W ") ",I);
@@ -394,10 +394,10 @@ DISPLAYRHS(LIST LHS, WORD NARGS, LIST CODE)
                            V[I-1]=HD(TL(X)), V[I]=TL(TL(X));  }
                            break; 
          case STOP_C: PRINTEXP(V[I],0);
-                      UNLESS IF_FLAG DO RETURN
+                      UNLESS IF_FLAG DO return;
                       WRITES(", ");
                       PRINTEXP(V[I-1],0);
-                      RETURN
+                      return;
          default: WRITES("IMPOSSIBLE INSTRUCTION IN \"DISPLAYRHS\"\n");
       } //END OF SWITCH
       CODE=TL(CODE);
@@ -513,13 +513,13 @@ EXPR(WORD N)  //N IS THE PRIORITY LEVEL
               PLANT0(APPLY_C);  } OR
       TEST STARTSIMPLE(HD(TOKENS))
       THEN COMBN();
-      OR { SYNTAX(); RETURN }
+      OR { SYNTAX(); return; }
    {  OPERATOR OP=MKINFIX(HD(TOKENS));
       WHILE DIPRIO(OP)>=N
       DO {  WORD I, AND_COUNT=0; //FOR CONTINUED RELATIONS
             TOKENS=TL(TOKENS);
             EXPR(RIGHTPREC(OP));
-            IF ERRORFLAG DO RETURN;
+            IF ERRORFLAG DO return;;
             WHILE ISRELOP((LIST)OP) && ISRELOP((LIST)MKINFIX(HD(TOKENS)))
             DO {  //CONTINUED RELATIONS
                   AND_COUNT=AND_COUNT+1;
@@ -527,7 +527,7 @@ EXPR(WORD N)  //N IS THE PRIORITY LEVEL
                   OP=MKINFIX(HD(TOKENS));
                   TOKENS=TL(TOKENS);
                   EXPR(4);
-                  IF ERRORFLAG DO RETURN  }
+                  IF ERRORFLAG DO return;  }
             PLANT1(APPLYINFIX_C,(LIST)OP);
             FOR (I=1; I<=AND_COUNT; I++)
 	       PLANT1(APPLYINFIX_C,(LIST)AND_OP);
@@ -749,7 +749,7 @@ COMPILEFORMAL(LIST X, WORD I)
            UNTIL J>=I || ENV[J]==X
            DO J=J+1;  // IS THIS A REPEATED NAME?
            TEST J>=I
-           THEN RETURN   // NO, NO CODE COMPILED
+           THEN return;   // NO, NO CODE COMPILED
            OR PLANT2(MATCHARG_C,(LIST)I,(LIST)J);  } OR
    TEST ISNUM(X) || X==NIL || (ISCONS(X) && HD(X)==(LIST)QUOTE)
    THEN PLANT2(MATCH_C,(LIST)I,X); OR
