@@ -17,7 +17,7 @@ FILE *
 bcpl_FINDINPUT(char *file)
 {
 	IF strcmp(file, ".IN") == 0 DO file="/dev/stdin";
-	RESULTIS fopen(file, "r");
+	return fopen(file, "r");
 }
 
 FILE *
@@ -25,7 +25,7 @@ bcpl_FINDOUTPUT(char *file)
 {
 	IF strcmp(file, ".OUT") == 0 DO file="/dev/stdout";
 	IF strcmp(file, ".ERR") == 0 DO file="/dev/stderr";
-	RESULTIS fopen(file, "w");
+	return fopen(file, "w");
 }
 
 // EMAS's READN() gobbles up the following character
@@ -40,7 +40,7 @@ WORD bcpl_READN()
       CH=RDCH();
    }
    TERMINATOR=CH;
-   RESULTIS D;
+   return D;
 }
 
 // The character that has been UNRDCH-ed. -1 means none are pending.
@@ -52,9 +52,9 @@ int bcpl_RDCH()
    IF UNREADCH>=0 DO {
       int CH=UNREADCH;
       UNREADCH=-1;
-      RESULTIS CH;
+      return CH;
    }
-   RESULTIS getc(bcpl_INPUT);
+   return getc(bcpl_INPUT);
 }
 
 // A version of RDCH that echoes what it reads
@@ -64,11 +64,11 @@ int echo_RDCH()
    IF UNREADCH>=0 DO {
       CH=UNREADCH;
       UNREADCH=-1;
-      RESULTIS CH;
+      return CH;
    }
    CH=getc(bcpl_INPUT);
    WRCH(CH);
-   RESULTIS CH;
+   return CH;
 }
 
 int bcpl_UNRDCH(int c)

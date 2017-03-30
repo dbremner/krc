@@ -36,7 +36,7 @@ typedef WORD BOOL;	// Not BCPL but...
 #define BE /**/
 #define FALSE 0
 #define TRUE 1
-#define RESULTIS return
+//#define RESULTIS return
 #define RETURN return;
 #define TEST if (			// Use: TEST p THEN x; OR y;
 #define THEN )

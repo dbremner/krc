@@ -71,8 +71,8 @@ READTOKEN(void)
 //          | CONS(IDENT,ATOM) | CONS(CONST,<ATOM|NUM>)
 {  WORD CH=RDCH();
    WHILE (CH==' '||CH=='\t') DO CH=RDCH();
-   IF CH=='\n' DO RESULTIS (TOKEN)EOL;
-   IF CH==EOF  DO RESULTIS (TOKEN)ENDSTREAMCH;
+   IF CH=='\n' DO return (TOKEN)EOL;
+   IF CH==EOF  DO return (TOKEN)ENDSTREAMCH;
    IF ('a'<=CH && CH<='z') || ('A'<=CH && CH<='Z')
       // || (CH=='_' && PEEKALPHA()) //expt to allow _ID, discontinued
 	|| (EXPECTFILE && !isspace(CH))
@@ -86,7 +86,7 @@ READTOKEN(void)
          IF TOKENS!=NIL && HD(TOKENS)==(TOKEN)'/' &&
 	     TL(TOKENS)==NIL && MEMBER(FILECOMMANDS,X)
          DO EXPECTFILE=TRUE;
-         RESULTIS CONS((LIST)IDENT,X);  }  }
+         return CONS((LIST)IDENT,X);  }  }
 #if DECIMALS
    // EMAS's READN GOBBLES THE FIRST CHAR AFTER THE NUMBER AND LEAVES IT IN
    // GLOBAL VARIABLE "TERMINATOR". obcpl ALSO EATS THE FOLLOWING CHAR BUT
@@ -100,7 +100,7 @@ READTOKEN(void)
          TEST TOKENS==NIL && TERMINATOR=='.'  //LINE NUMBERS (ONLY) ARE
          THEN THE_DECIMALS==READ_DECIMALS();  //ALLOWED A DECIMAL PART
          OR UNRDCH(CH);
-         RESULTIS CONS(CONST,STONUM(THE_NUM)); }
+         return CONS(CONST,STONUM(THE_NUM)); }
 #else
    IF isdigit(CH)
    DO {  THE_NUM  = 0;
@@ -111,7 +111,7 @@ READTOKEN(void)
                      ESCAPETONEXTCOMMAND();  }
 	       CH = RDCH();  }
          IF CH != EOF DO UNRDCH(CH);
-         RESULTIS CONS((TOKEN)CONST,STONUM(THE_NUM)); }
+         return CONS((TOKEN)CONST,STONUM(THE_NUM)); }
 #endif
    IF CH=='"'
    DO {  ATOM A;
@@ -130,7 +130,7 @@ READTOKEN(void)
                         case '\\': BUFCH('\\'); break;
                         case '\'': BUFCH('\''); break;
                         case '\"': BUFCH('\"'); break;
-                        case '\n': RESULTIS (TOKEN)BADTOKEN;
+                        case '\n': return (TOKEN)BADTOKEN;
                         default: IF '0'<=CH&&CH<='9'
                                  DO { int i=3,n=CH-'0',n1;
                                       CH=RDCH();
@@ -142,7 +142,7 @@ READTOKEN(void)
                OR BUFCH(CH);
                CH=RDCH();  }
          A=PACKBUFFER();
-         RESULTIS CH!='"' ? (TOKEN)BADTOKEN : CONS(CONST,(LIST)A);  }
+         return CH!='"' ? (TOKEN)BADTOKEN : CONS(CONST,(LIST)A);  }
 {  WORD CH2=RDCH();
    IF CH==':' && CH2=='-' && TOKENS!=NIL && ISCONS(HD(TOKENS)) &&
       HD(HD(TOKENS))==IDENT && TL(TOKENS)==NIL
@@ -156,8 +156,8 @@ READTOKEN(void)
          DO { UNTIL CH==';' || CH==EOF
               DO { IF CH=='\n' DO COMMENTFLAG++;
                    CH=RDCH(); }
-              RESULTIS NIL; }
-         IF CH==';' DO RESULTIS NIL;
+              return NIL; }
+         IF CH==';' DO return NIL;
          UNTIL CH==';' || CH==EOF
          DO TEST CH=='\n'
             THEN {  C=CONS((LIST)PACKBUFFER(),C);
@@ -172,35 +172,35 @@ READTOKEN(void)
 	        COMMENTFLAG--;
 	        SYNTAX(); }
          OR C=CONS((LIST)PACKBUFFER(),C);
-         RESULTIS REVERSE(C); }
+         return REVERSE(C); }
    IF CH==CH2
-   DO {  IF CH=='+' DO RESULTIS PLUSPLUS_SY;
-         IF CH=='.' DO RESULTIS DOTDOT_SY;
-         IF CH=='-' DO RESULTIS DASHDASH_SY;
-         IF CH=='*' DO RESULTIS STARSTAR_SY;
-         IF CH=='='   DO RESULTIS EQ_SY; // ADDED DT 2015
+   DO {  IF CH=='+' DO return PLUSPLUS_SY;
+         IF CH=='.' DO return DOTDOT_SY;
+         IF CH=='-' DO return DASHDASH_SY;
+         IF CH=='*' DO return STARSTAR_SY;
+         IF CH=='='   DO return EQ_SY; // ADDED DT 2015
          IF CH=='|' DO // COMMENT TO END OF LINE (NEW)
          do{ CH=RDCH();
-             IF CH=='\n' DO RESULTIS EOL;
-             IF CH==EOF  DO RESULTIS ENDSTREAMCH;
+             IF CH=='\n' DO return EOL;
+             IF CH==EOF  DO return ENDSTREAMCH;
          } REPEAT;
       }
-   IF CH=='<' && '-'==CH2 DO RESULTIS BACKARROW_SY;
+   IF CH=='<' && '-'==CH2 DO return BACKARROW_SY;
    IF CH2=='='
-   DO {  IF CH=='>'   DO RESULTIS GE_SY;
-         IF CH=='<'   DO RESULTIS LE_SY;
-         IF NOTCH(CH) DO RESULTIS NE_SY;
+   DO {  IF CH=='>'   DO return GE_SY;
+         IF CH=='<'   DO return LE_SY;
+         IF NOTCH(CH) DO return NE_SY;
       }
    UNRDCH(CH2);
    IF CH=='?'||CH=='!' DO EXPFLAG=TRUE;
    IF CH=='=' && !LEGACY DO EQNFLAG=TRUE;
-   RESULTIS (TOKEN)(NOTCH(CH) ? '\\' : CH);  // GCC WARNING EXPECTED
+   return (TOKEN)(NOTCH(CH) ? '\\' : CH);  // GCC WARNING EXPECTED
 }  }
 
 WORD
 CASECONV(WORD CH)
 {
-   RESULTIS tolower(CH);
+   return tolower(CH);
 }
 
 #ifdef DECIMALS
@@ -208,7 +208,7 @@ WORD
 PEEKDIGIT()
 {  WORD CH=RDCH();
    UNRDCH(CH);
-   RESULTIS (isdigit(CH));
+   return (isdigit(CH));
 }
 
 STATIC WORD
@@ -221,7 +221,7 @@ READ_DECIMALS(void)         //RETURNS VALUE IN HUNDREDTHS
             WHILE D==' ' DO D=RDCH();
             UNLESS D==')' DO SYNTAX();
             UNRDCH(D);
-            RESULTIS N;  }
+            return N;  }
       N=N+F*D; //NOTE THAT DECIMAL PLACES AFTER THE 2ND WILL HAVE NO
       F=F/10;  //EFFECT ON THE ANSWER
    } REPEAT;
@@ -232,7 +232,7 @@ STATIC WORD
 PEEKALPHA()
 {  WORD CH=RDCH();
    UNRDCH(CH);
-   RESULTIS (('a'<=CH && CH<='z') || ('A'<=CH && CH<='Z'));
+   return (('a'<=CH && CH<='z') || ('A'<=CH && CH<='Z'));
 }
 
 VOID
@@ -262,9 +262,9 @@ WRITETOKEN(TOKEN T)
 
 BOOL
 HAVE(TOKEN T)
-{  IF TOKENS==NIL || HD(TOKENS)!=T DO RESULTIS FALSE;
+{  IF TOKENS==NIL || HD(TOKENS)!=T DO return FALSE;
    TOKENS=TL(TOKENS);
-   RESULTIS TRUE; }
+   return TRUE; }
 
 VOID
 CHECK(TOKEN T)
@@ -279,26 +279,26 @@ SYNTAX()
 WORD
 HAVEID()
 {  UNLESS ISCONS(HD(TOKENS)) && HD(HD(TOKENS))==IDENT
-   DO RESULTIS FALSE;
+   DO return FALSE;
    THE_ID=(ATOM) TL(HD(TOKENS));
    TOKENS=TL(TOKENS);
-   RESULTIS TRUE; }
+   return TRUE; }
 
 WORD
 HAVECONST()
 {  UNLESS ISCONS(HD(TOKENS)) && HD(HD(TOKENS))==CONST
-   DO RESULTIS FALSE;
+   DO return FALSE;
    THE_CONST=TL(HD(TOKENS));
    TOKENS=TL(TOKENS);
-   RESULTIS TRUE; }
+   return TRUE; }
 
 WORD
 HAVENUM()
 {  UNLESS ISCONS(HD(TOKENS)) && HD(HD(TOKENS))==CONST &&
-          ISNUM(TL(HD(TOKENS))) DO RESULTIS FALSE;
+          ISNUM(TL(HD(TOKENS))) DO return FALSE;
    THE_NUM=GETNUM(TL(HD(TOKENS)));
    TOKENS=TL(TOKENS);
-   RESULTIS TRUE;  }
+   return TRUE;  }
 
 VOID
 SYNTAX_ERROR(char *message) //syntax error diagnosis (needs refining)

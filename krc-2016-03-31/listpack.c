@@ -172,15 +172,15 @@ HAVEPARAM(WORD CH)
       CH = toupper(CH);
       FOR (I=1; I<ARGC; I++)
          IF ARGV[I][0] == '-' && toupper(ARGV[I][1]) == toupper(CH)
-	 DO RESULTIS TRUE;
-      RESULTIS FALSE;  }
+	 DO return TRUE;
+      return FALSE;  }
 
 LIST
 CONS(LIST X, LIST Y)
 {
    IF CONSP>=(CONSLIMIT-1) DO GC();
    HD(CONSP)=X,TL(CONSP)=Y,CONSP=CONSP+1;
-   RESULTIS CONSP-1; 
+   return CONSP-1; 
 }
 
 #include <setjmp.h>
@@ -365,38 +365,38 @@ ISCONS(LIST X)
 #ifdef INSTRUMENT_KRC_GC
 {  IF CONSBASE<=X && X<CONSLIMIT DO
    {  IF ((char *)X - (char *)CONSLIMIT) % sizeof(struct LIST) != 0 DO
-      { WRITEF("\nMisaligned pointer %p in ISCONS\n", X); RESULTIS FALSE; }
-      RESULTIS HD(X)!=FULLWORD;  }
-   RESULTIS FALSE;  }
+      { WRITEF("\nMisaligned pointer %p in ISCONS\n", X); return FALSE; }
+      return HD(X)!=FULLWORD;  }
+   return FALSE;  }
 #else
-{  RESULTIS CONSBASE<=X && X<CONSLIMIT ? HD(X)!=FULLWORD : FALSE;  }
+{  return CONSBASE<=X && X<CONSLIMIT ? HD(X)!=FULLWORD : FALSE;  }
 #endif
 
 WORD
 ISATOM(LIST X)
-{  RESULTIS ATOMBASE<=(ATOM)X && (ATOM)X<ATOMP;  }
+{  return ATOMBASE<=(ATOM)X && (ATOM)X<ATOMP;  }
 
 WORD
 ISNUM(LIST X)
 #ifdef INSTRUMENT_KRC_GC
 {  IF CONSBASE<=X && X<CONSLIMIT DO
    {  IF ((char *)X - (char *)CONSLIMIT) % sizeof(struct LIST) != 0 DO
-      {  WRITEF("\nMisaligned pointer %p in ISNUM\n", X); RESULTIS FALSE;  }
-      RESULTIS HD(X)==FULLWORD;  }
-   RESULTIS FALSE;  }
+      {  WRITEF("\nMisaligned pointer %p in ISNUM\n", X); return FALSE;  }
+      return HD(X)==FULLWORD;  }
+   return FALSE;  }
 #else
-{  RESULTIS CONSBASE<=X&&X<CONSLIMIT ? HD(X)==FULLWORD : FALSE;  }
+{  return CONSBASE<=X&&X<CONSLIMIT ? HD(X)==FULLWORD : FALSE;  }
 #endif
 
 LIST
-STONUM(WORD N) {RESULTIS CONS(FULLWORD,(LIST)N);} // GCC WARNING EXPECTED
+STONUM(WORD N) {return CONS(FULLWORD,(LIST)N);} // GCC WARNING EXPECTED
 
 WORD
-GETNUM(LIST X) {RESULTIS (WORD)(TL(X));}          // GCC WARNING EXPECTED
+GETNUM(LIST X) {return (WORD)(TL(X));}          // GCC WARNING EXPECTED
 
 ATOM
 MKATOM(char *S)              // make an ATOM from a C string
-{  RESULTIS MKATOMN(S, strlen(S));  }
+{  return MKATOMN(S, strlen(S));  }
 
 ATOM
 MKATOMN(char *S, int LEN)    // make an ATOM which might contain NULs
@@ -406,7 +406,7 @@ MKATOMN(char *S, int LEN)    // make an ATOM which might contain NULs
    WORD N;
    UNTIL *P==0 DO    // SEARCH THE APPROPRIATE BUCKET
    {  IF LEN==LEN(*P) && memcmp(S, PRINTNAME(*P), (size_t)LEN) == 0
-      DO RESULTIS (ATOM)*P;
+      DO return (ATOM)*P;
       P=&(LINK(*P));  }
    //CREATE NEW ATOM
    // +1 for the BCPL size, +1 for the \0, then round up to element size
@@ -419,7 +419,7 @@ MKATOMN(char *S, int LEN)    // make an ATOM which might contain NULs
    memcpy(NAME(ATOMP)+1, S, (size_t)LEN),
    NAME(ATOMP)[LEN+1]= '\0';
    ATOMP=(ATOM)((WORD **)ATOMP+OFFSET+N);
-   RESULTIS *P;
+   return *P;
 }
 
 STATIC WORD
@@ -435,7 +435,7 @@ HASH(char *S, int LEN)  // TAKES A NAME AND RETURNS A VALUE IN 0..127
                H=H+S[3];
    }  }  }
 
-   RESULTIS H&0x7F; }
+   return H&0x7F; }
 
 VOID
 BUFCH(WORD CH)
@@ -447,12 +447,12 @@ ATOM
 PACKBUFFER()
 {  ATOM RESULT=MKATOMN(BUFFER,BUFP);
    BUFP=0;
-   RESULTIS RESULT;  }
+   return RESULT;  }
 
 // Does string A sort before string B?
 BOOL
 ALFA_LS(ATOM A, ATOM B)  // A,B ARE ATOMS
-{  RESULTIS strcmp(PRINTNAME(A), PRINTNAME(B)) < 0; }
+{  return strcmp(PRINTNAME(A), PRINTNAME(B)) < 0; }
 
 STATIC void
 GCSTATS()
@@ -510,44 +510,44 @@ LENGTH(LIST X)
 {  WORD N = 0;
    UNTIL X==NIL
    DO X=TL(X),N=N+1;
-   RESULTIS N;  }
+   return N;  }
 
 WORD
 MEMBER(LIST X, LIST A)
 {  UNTIL X==NIL || HD(X)==A
    DO X = TL(X);
-   RESULTIS X!=NIL;  }
+   return X!=NIL;  }
 
 LIST 
-APPEND(LIST X, LIST Y) { RESULTIS SHUNT(SHUNT(X,NIL),Y); }
+APPEND(LIST X, LIST Y) { return SHUNT(SHUNT(X,NIL),Y); }
 
 LIST 
-REVERSE(LIST X) { RESULTIS SHUNT(X,NIL); }
+REVERSE(LIST X) { return SHUNT(X,NIL); }
 
 LIST 
 SHUNT(LIST X, LIST Y)
 {  UNTIL X==NIL
    DO {  Y=CONS(HD(X),Y);
          X=TL(X);  }
-   RESULTIS Y;  }
+   return Y;  }
 
 LIST 
 SUB1(LIST X, ATOM A)   //DESTRUCTIVELY REMOVES A FROM X (IF PRESENT)
-{   IF X==NIL DO RESULTIS NIL;
-    IF HD(X)==(LIST)A DO RESULTIS TL(X);
+{   IF X==NIL DO return NIL;
+    IF HD(X)==(LIST)A DO return TL(X);
 {  LIST *P=&(TL(X));
    UNTIL (*P==NIL) || HD(*P)==(LIST)A DO P=&(TL(*P));
    UNLESS *P==NIL DO *P=TL(*P);
-   RESULTIS X;  }  }
+   return X;  }  }
 
 WORD
 EQUAL(LIST X, LIST Y)
 { do {
-   IF X==Y DO RESULTIS TRUE;
+   IF X==Y DO return TRUE;
    IF ISNUM(X) && ISNUM(Y)
-   DO RESULTIS GETNUM(X)==GETNUM(Y);
+   DO return GETNUM(X)==GETNUM(Y);
    UNLESS ISCONS(X) && ISCONS(Y) && EQUAL(HD(X),HD(Y))
-   DO RESULTIS FALSE;
+   DO return FALSE;
    X=TL(X), Y=TL(Y);
   } while(1);
 }
@@ -555,7 +555,7 @@ EQUAL(LIST X, LIST Y)
 LIST 
 ELEM(LIST X, WORD N)
 {  UNTIL N==1 DO X=TL(X),N=N-1;
-   RESULTIS HD(X);  }
+   return HD(X);  }
 
 void
 PRINTOB(LIST X) //or ATOM
@@ -581,15 +581,15 @@ LIST
 ISOKCONS(LIST P)
 {
    LIST Q;
-   IF COLLECTING DO RESULTIS P;
+   IF COLLECTING DO return P;
 
    TEST CONSBASE<=P && P<CONSLIMIT
    THEN
       // (ONLY EVEN ADDRESSES IN LISTSPACE COUNT)
       TEST ((char *)P - (char *)CONSBASE) % sizeof(struct LIST) == 0
-      THEN RESULTIS P;
+      THEN return P;
       OR { WRITEF("\nHD() or TL() called on ODD address %p\n", P); }
    OR { WRITEF("\nHD() or TL() called on %p not in CONS space\n", P); }
-   RESULTIS (LIST)0; // Cause segfault in caller
+   return (LIST)0; // Cause segfault in caller
 }
 #endif

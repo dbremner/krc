@@ -185,10 +185,10 @@ static char *input_line;
 static int
 str_RDCH(void)
 {
-   IF input_line==NULL DO RESULTIS EOF;
+   IF input_line==NULL DO return EOF;
    IF *input_line=='\0' DO {  input_line=NULL;
-				RESULTIS '\n';  }
-   RESULTIS *input_line++;
+				return '\n';  }
+   return *input_line++;
 }
 
 static int
@@ -197,7 +197,7 @@ str_UNRDCH(int c)
    TEST input_line==NULL && c=='\n'
    THEN input_line="\n";
    OR *(--input_line)=c;
-   RESULTIS c;
+   return c;
 }
 
 // SAME AS READLINE, BUT GETS ITS INPUT FROM A C STRING
@@ -423,8 +423,8 @@ FINDCHANNEL(char *F)
    THEN {  FILE *OUT = FINDOUTPUT(F);
            IF OUT != NULL
            DO OUTFILES=CONS(CONS((LIST)F,(LIST)OUT),OUTFILES);
-           RESULTIS OUT; }
-   OR RESULTIS (FILE *)TL(HD(P));
+           return OUT; }
+   OR return (FILE *)TL(HD(P));
 }
 
 // COMMAND INTERPRETER
@@ -560,7 +560,7 @@ STARTDISPLAYCOM()
 { LIST HOLD=TOKENS;
   WORD  R=HAVEID() && (HAVE(EOL) || HAVE((TOKEN)DOTDOT_SY));
   TOKENS=HOLD;
-  RESULTIS R;
+  return R;
 }
 
 STATIC VOID
@@ -598,8 +598,8 @@ DISPLAYALL(BOOL DOUBLESPACING)  // "SCRIPT" IS A LIST OF ALL USER DEFINED
 
 STATIC BOOL
 PRIMITIVE(ATOM A)
-{ IF TL(VAL(A))==NIL DO RESULTIS FALSE; //A has comment but no eqns
-  RESULTIS HD(TL(HD(TL(VAL(A)))))==(LIST)CALL_C; }
+{ IF TL(VAL(A))==NIL DO return FALSE; //A has comment but no eqns
+  return HD(TL(HD(TL(VAL(A)))))==(LIST)CALL_C; }
 
 STATIC VOID
 QUITCOM()
@@ -612,14 +612,14 @@ QUITCOM()
 
 STATIC BOOL
 MAKESURE()
-{  IF SAVED || SCRIPT==NIL DO RESULTIS TRUE;
+{  IF SAVED || SCRIPT==NIL DO return TRUE;
    WRITES("Are you sure? ");
 {  WORD CH=RDCH(), C;
    UNRDCH(CH);
    UNTIL (C=RDCH())=='\n' || C == EOF DO LOOP
-   IF CH=='y' || CH=='Y' DO RESULTIS TRUE;
+   IF CH=='y' || CH=='Y' DO return TRUE;
    WRITES("Command ignored\n");
-   RESULTIS FALSE;
+   return FALSE;
 }  }
 
 STATIC VOID
@@ -687,9 +687,9 @@ FILECOM()
 
 STATIC BOOL
 OKFILE(FILE *STR, char *FILENAME)
-{  IF STR!=NULL DO RESULTIS TRUE;
+{  IF STR!=NULL DO return TRUE;
    WRITEF("Cannot open \"%s\"\n",FILENAME);
-   RESULTIS FALSE; }
+   return FALSE; }
 
 STATIC VOID
 GETCOM()
@@ -713,7 +713,7 @@ CHECK_HITS()
 STATIC BOOL
 GETFILE(char *FILENAME)
    {  FILE *IN = FINDINPUT(FILENAME);
-      UNLESS OKFILE(IN,FILENAME) DO RESULTIS FALSE;
+      UNLESS OKFILE(IN,FILENAME) DO return FALSE;
       SELECTINPUT(IN);
    {  int line=0; //to locate line number of error in file
       do{line++;
@@ -736,7 +736,7 @@ GETFILE(char *FILENAME)
       ENDREAD();
       SELECTINPUT(SYSIN);
       LASTLHS=NIL;
-      RESULTIS TRUE;  }}
+      return TRUE;  }}
 
 STATIC VOID
 LISTCOM()
@@ -783,7 +783,7 @@ FIND_UNDEFS()  //SEARCHES THE SCRIPT FOR NAMES USED BUT NOT DEFINED
 
 STATIC BOOL
 ISDEFINED(ATOM X)
-{  RESULTIS VAL(X)==NIL||TL(VAL(X))==NIL ? FALSE : TRUE;  }
+{  return VAL(X)==NIL||TL(VAL(X))==NIL ? FALSE : TRUE;  }
 
 STATIC VOID
 LIBCOM()
@@ -895,9 +895,9 @@ STATIC LIST
 SUBST(LIST Z,LIST A)
 {  UNTIL Z==NIL
    DO {  IF A==HD(HD(Z))
-         DO  {  SAVED=FALSE; RESULTIS TL(HD(Z));  }
+         DO  {  SAVED=FALSE; return TL(HD(Z));  }
          Z=TL(Z); }
-   RESULTIS A;  }
+   return A;  }
 
 STATIC VOID
 NEWEQUATION()
@@ -1027,7 +1027,7 @@ ABORDERCOM()
 
 STATIC LIST
 SORT(LIST X)
-{  IF X==NIL || TL(X)==NIL DO RESULTIS X;
+{  IF X==NIL || TL(X)==NIL DO return X;
    {  LIST A=NIL, B=NIL, HOLD=NIL;  //FIRST SPLIT X
       UNTIL X==NIL DO HOLD=A, A=CONS(HD(X),B), B=HOLD, X=TL(X);
       A=SORT(A),B=SORT(B);
@@ -1037,7 +1037,7 @@ SORT(LIST X)
 	 OR   X=CONS(HD(B),X), B=TL(B);
       IF A==NIL DO A=B;
       UNTIL A==NIL DO X=CONS(HD(A),X), A=TL(A);
-      RESULTIS REVERSE(X);  }
+      return REVERSE(X);  }
 }
 
 STATIC VOID
@@ -1113,17 +1113,17 @@ SCRIPTREORDER()
 
 STATIC WORD
 NO_OF_EQNS(ATOM A)
-{  RESULTIS VAL(A)==NIL ? 0 : LENGTH(TL(VAL(A)));  }
+{  return VAL(A)==NIL ? 0 : LENGTH(TL(VAL(A)));  }
 
 STATIC BOOL
 PROTECTED(ATOM A)
   //LIBRARY FUNCTIONS ARE RECOGNISABLE BY NOT BEING PART OF THE SCRIPT
-{  IF MEMBER(SCRIPT,(LIST)A) DO RESULTIS FALSE;
+{  IF MEMBER(SCRIPT,(LIST)A) DO return FALSE;
    IF MEMBER(HOLDSCRIPT,(LIST)A)
    DO {  UNLESS MEMBER(GET_HITS,(LIST)A) DO GET_HITS=CONS((LIST)A,GET_HITS);
-         RESULTIS FALSE;  }
+         return FALSE;  }
    WRITEF("\"%s\" is predefined and cannot be altered\n",PRINTNAME(A));
-   RESULTIS TRUE;  }
+   return TRUE;  }
 
 STATIC VOID
 REMOVE(ATOM A)   // REMOVES "A" FROM THE SCRIPT
@@ -1140,7 +1140,7 @@ EXTRACT(ATOM A, ATOM B)         //RETURNS A SEGMENT OF THE SCRIPT
    IF S==NIL && B!=(ATOM)EOL DO X=NIL;
    IF X==NIL DO WRITEF("\"%s..%s\" not in script\n",
                       PRINTNAME(A),B==(ATOM)EOL?"":PRINTNAME(B));
-   RESULTIS REVERSE(X);  }
+   return REVERSE(X);  }
 
 STATIC VOID
 DELETECOM()
