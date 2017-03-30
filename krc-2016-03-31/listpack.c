@@ -59,7 +59,7 @@ int ARGC; char **ARGV;	//  Program parameters
 
 
 // Forward declarations
-STATIC WORD HASH(char *S, int LEN);
+static WORD HASH(char *S, int LEN);
 static void GC(void);
 static void COPY(LIST *P);
 static void COPYHEADS(void);
@@ -422,7 +422,7 @@ MKATOMN(char *S, int LEN)    // make an ATOM which might contain NULs
    return *P;
 }
 
-STATIC WORD
+static WORD
 HASH(char *S, int LEN)  // TAKES A NAME AND RETURNS A VALUE IN 0..127
 {  int H=LEN;
    IF LEN && S[0] DO {
@@ -454,7 +454,7 @@ BOOL
 ALFA_LS(ATOM A, ATOM B)  // A,B ARE ATOMS
 {  return strcmp(PRINTNAME(A), PRINTNAME(B)) < 0; }
 
-STATIC void
+static void
 GCSTATS()
 {  WRITEF("Cells claimed = %d, no of gc's = %d",
           (int)(RECLAIMS+(CONSP-CONSBASE)/2), (int)NOGCS); }

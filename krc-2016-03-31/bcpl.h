@@ -29,7 +29,7 @@ typedef int WORD;	// 32-bit value.
 
 
 /* transliterate BCPL into C */
-#define STATIC static
+//#define STATIC static
 typedef void VOID;	// Not BCPL but...
 typedef WORD BOOL;	// Not BCPL but...
 #define AND /**/
