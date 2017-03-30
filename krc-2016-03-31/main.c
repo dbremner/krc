@@ -720,11 +720,11 @@ GETFILE(char *FILENAME)
          READLINE();
 	 IF ferror(IN) DO {
 	    ERRORFLAG=TRUE;
-	    BREAK;
+	    break;;
          }
          IF HAVE(EOL) DO LOOP;  
          IF HD(TOKENS)==ENDSTREAMCH
-         DO BREAK
+         DO break;
          TEST COMMENTFLAG
          THEN { line+=(COMMENTFLAG-1);
                 COMMENT(); }
@@ -936,10 +936,10 @@ NEWEQUATION()
                                HD(HD(EQNS))=HD(EQN);  }
                        OR HD(EQNS)=EQN;
                        CLEARMEMORY();
-                       BREAK  }
+                       break;  }
                  IF TL(EQNS)==NIL
                  DO {  TL(EQNS)=CONS(EQN,NIL);
-                       BREAK  }
+                       break;  }
                  EQNS=TL(EQNS);
               } REPEAT
            } 
@@ -952,16 +952,16 @@ NEWEQUATION()
                IF EQNO==N
                DO {  HD(EQNS)=EQN;
                      CLEARMEMORY();
-                     BREAK  }
+                     break;  }
                IF EQNO<N
                DO {  LIST HOLD=HD(EQNS);
                      HD(EQNS)=EQN;
                      TL(EQNS)=CONS(HOLD,TL(EQNS));
                      CLEARMEMORY();
-                     BREAK  }
+                     break;  }
                IF TL(EQNS)==NIL
                DO {  TL(EQNS)=CONS(EQN,NIL);
-                     BREAK  }
+                     break;  }
                EQNS=TL(EQNS);
             } REPEAT
          } 

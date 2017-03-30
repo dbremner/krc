@@ -177,10 +177,10 @@ PRINTVAL(LIST E, BOOL FORMAT)
 			 PRINTVAL(HD(E),FORMAT);
                          E=TL(E);
                          E=REDUCE(E);
-                         UNLESS ISCONS(E) DO BREAK
+                         UNLESS ISCONS(E) DO break;
                          TEST HD(E)==(LIST)COLON_OP
                          THEN { IF FORMAT DO WRCH(','); }
-                         OR BREAK
+                         OR break;
                          E=TL(E);
                       } REPEAT;
                       TEST E==NIL

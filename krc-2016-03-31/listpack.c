@@ -95,9 +95,9 @@ main(int argc, char **argv)
             IF strncasecmp(cp, "-e ", 3)==0 DO {
 	       // After "-e", all the rest is the expr to evaluate
                cp += 2; *cp++='\0'; ARGV[ARGC++]=cp;
-	       BREAK;
+	       break;;
             }
-	    IF strchr(cp, ' ') == NULL DO BREAK; // No more spaces
+	    IF strchr(cp, ' ') == NULL DO break;; // No more spaces
             cp=strchr(cp, ' '), *cp++ = '\0';
          }
          // Now copy the rest of ARGV: the script name and its args
