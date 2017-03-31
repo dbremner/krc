@@ -31,6 +31,7 @@ extern WORD	EXPFLAG, ERRORFLAG, EQNFLAG;
 extern TOKEN	MISSEDTOK;
 extern WORD CASECONV(WORD CH);
 extern WORD	COMMENTFLAG;
+extern BOOL SKIPCOMMENTS;  //SET BY -s OPTION
 // SUPPRESSPROMPTS();  //EMAS COMMAND
 extern LIST	FILECOMMANDS;
 extern BOOL	LEGACY;
@@ -127,6 +128,9 @@ typedef enum {
 //Notes - "%" is remainder operator, "." is functional composition and "#" takes the length of lists
 
 //COMPILER GLOBALS
+
+//
+extern char *USERLIB; //SET BY -l OPTION
 
 // DEFINED IN KRC_LEX
 extern void	READLINE(void);

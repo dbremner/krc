@@ -67,7 +67,6 @@ static char PARAMV[256];	// FOR CALLING EMAS
 // Global variables owned by main.c
 WORD LEGACY=FALSE; //set by -z option
 LIST FILECOMMANDS = NIL;
-BOOL SKIPCOMMENTS;  //SET BY -s OPTION
 char *USERLIB=NULL; //SET BY -l OPTION
 
 // Local variables
