@@ -338,7 +338,7 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                        break; 
             case FORMLIST_C: // ARGP=ARGP+1;
                              *ARGP=NIL;
-                             FOR (I=1; I<=(WORD)HD(CODE); I++)
+                             for (I=1; I<=(WORD)HD(CODE); I++)
                              {  ARGP=ARGP-1;
                                 *ARGP=CONS((LIST)COLON_OP,
                                         CONS(*ARGP,*(ARGP+1)));
@@ -347,14 +347,14 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                              break; 
             case FORMZF_C: {  LIST X=CONS(*(ARGP-(WORD)HD(CODE)),NIL);
 			      LIST *P;
-                              FOR (P=ARGP; P>=ARGP-(WORD)HD(CODE)+1; P=P-1)
+                              for (P=ARGP; P>=ARGP-(WORD)HD(CODE)+1; P=P-1)
                                  X=CONS(*P,X);
                               ARGP=ARGP-(WORD)HD(CODE);
                               *ARGP=CONS((LIST)ZF_OP,X);
                               CODE=TL(CODE);
                               break;   }
             case CONT_GENERATOR_C:
-                  FOR (I=1; I<=(WORD)HD(CODE); I++)
+                  for (I=1; I<=(WORD)HD(CODE); I++)
                      *(ARGP-I)=CONS((LIST)GENERATOR,CONS(*(ARGP-I),
                                      TL(TL(*ARGP))));
                   CODE=TL(CODE);
@@ -483,7 +483,7 @@ CONCAT(LIST E)
       UNTIL A==NIL
       DO {  ATOM N=(ATOM)TL(HD(TL(A)));
             int I;
-            FOR (I=1; I<=LEN(N); I++) BUFCH(NAME(N)[I]);
+            for (I=1; I<=LEN(N); I++) BUFCH(NAME(N)[I]);
             A=TL(TL(A));  }
       A=(LIST)PACKBUFFER();
       HD(E) = (LIST)INDIR,
@@ -500,7 +500,7 @@ EXPLODE(LIST E)
    {  ATOM A=(ATOM)TL(*ARG);
       LIST X = NIL;
       int I;
-      FOR (I=NAME(A)[0]; I>0; I--)
+      for (I=NAME(A)[0]; I>0; I--)
          {  BUFCH(NAME(A)[I]);
             X = CONS((LIST)COLON_OP, CONS(CONS((LIST)QUOTE,(LIST)PACKBUFFER()),X)); }
       HD(E)=(LIST)INDIR, TL(E)=X;
@@ -594,7 +594,7 @@ REDUCE(LIST E)
                  IF N>NARGS DO goto BREAK_MAIN_LOOP;  //NOT ENOUGH ARGS
               {  LIST EQNS=TL(VAL((ATOM)E));
 		 WORD I;
-                 FOR (I=0; I<=N-1; I++)
+                 for (I=0; I<=N-1; I++)
                  {  LIST HOLD=HD(S);  //MOVE BACK UP GRAPH,
                     ARGP=ARGP+1;   //STACKING ARGS EN ROUTE
                     IF ARGP>ARGMAX DO SPACE_ERROR("Arg stack overflow");
@@ -864,7 +864,7 @@ VOID
 REDUCER_BASES(VOID (*F)(LIST *))
 {  LIST *AP;
 
-   FOR (AP=ARGSPACE; AP<=ARGP; AP++)
+   for (AP=ARGSPACE; AP<=ARGP; AP++)
       F(AP);
 }
 

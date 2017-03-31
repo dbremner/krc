@@ -101,7 +101,7 @@ main(int argc, char **argv)
             cp=strchr(cp, ' '), *cp++ = '\0';
          }
          // Now copy the rest of ARGV: the script name and its args
-         FOR (I=2; I<argc; I++) ARGV[ARGC++]=argv[I];
+         for (I=2; I<argc; I++) ARGV[ARGC++]=argv[I];
       }
 
       // Terminal output should be unbuffered
@@ -124,7 +124,7 @@ main(int argc, char **argv)
       }
 
       // Handle command line arguments that affect this file
-      FOR (I=1; I<ARGC; I++) {
+      for (I=1; I<ARGC; I++) {
          IF ARGV[I][0]=='-' DO
             switch( ARGV[I][1] ) {
             case 'g': ATGC=TRUE; break; 
@@ -170,7 +170,7 @@ HAVEPARAM(WORD CH)
 {
       WORD I;
       CH = toupper(CH);
-      FOR (I=1; I<ARGC; I++)
+      for (I=1; I<ARGC; I++)
          IF ARGV[I][0] == '-' && toupper(ARGV[I][1]) == toupper(CH)
 	 DO return TRUE;
       return FALSE;  }
@@ -240,7 +240,7 @@ COLLECTING = TRUE;
       BASES(COPY);    // USER'S STATIC VARIABLES ETC.
 SHOW("bases");
       {  WORD I;
-         FOR (I=0; I < 128; I++)
+         for (I=0; I < 128; I++)
          {  ATOM A=HASHV[I];         // VAL FIELDS OF ATOMS
             UNTIL A==0
             DO {  COPY((LIST *)&(VAL(A)));
@@ -251,7 +251,7 @@ SHOW("atoms");
       TEST STACKBASE < STACKEND
       THEN
          // STACK GROW UPWARDS
-         FOR (P=STACKBASE+1; P<STACKEND; P++) {
+         for (P=STACKBASE+1; P<STACKEND; P++) {
             IF CONSBASE<=(LIST)*P && (LIST)*P<CONSLIMIT DO {
 	       IF ((char *)*P-(char *)CONSBASE)%sizeof(struct LIST)==0
 	       DO // AN ALIGNED ADDRESS IN LISTSPACE
@@ -267,7 +267,7 @@ SHOW("atoms");
          }
       OR
 	 // STACK GROWS DOWNWARDS
-         FOR (P=STACKBASE-1; P>STACKEND; P--) {
+         for (P=STACKBASE-1; P>STACKEND; P--) {
             IF CONSBASE<=(LIST)*P && (LIST)*P<CONSLIMIT DO {
 	       IF ((char *)*P-(char *)CONSBASE)%sizeof(struct LIST)==0
 	       DO // AN ALIGNED ADDRESS IN LISTSPACE
@@ -486,10 +486,10 @@ LISTPM()
       WRITEF(", current cells = %d\n",(int)((CONSP-CONSBASE)/2));
       IF BUFP>0
       DO {  WRITES("Buffer: ");
-            FOR (I = 0; I<BUFP; I++) { WRCH(BUFFER[I]); }
+            for (I = 0; I<BUFP; I++) { WRCH(BUFFER[I]); }
             NEWLINE();  }
       WRITES("Atom buckets:\n");
-      FOR (I=0; I<128; I++)
+      for (I=0; I<128; I++)
          TEST HASHV[I] != 0
          THEN {  ATOM P=HASHV[I];
                  WRITEF("%d :\t", (int)I);
