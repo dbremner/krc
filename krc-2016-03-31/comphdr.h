@@ -143,6 +143,8 @@ extern WORD	HAVENUM(void);
 extern void	SYNTAX_ERROR(char *);
 
 // DEFINED IN KRC_COMPILER
+extern VOID HOLD_INTERRUPTS(void);
+extern VOID RELEASE_INTERRUPTS(void);
 extern void INIT_CODEV(void);
 extern LIST EQUATION(void);
 extern LIST PROFILE(LIST);

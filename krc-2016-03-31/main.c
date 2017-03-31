@@ -77,7 +77,7 @@ static char *EVALUATE = NULL;	// Expression to execute in batch mode
 
 // INITIALISATION AND STEERING
 
-VOID ESCAPETONEXTCOMMAND();
+VOID ESCAPETONEXTCOMMAND(void);
 
 // Are we ignoring interrupts?
 static BOOL INTERRUPTS_ARE_HELD = FALSE;

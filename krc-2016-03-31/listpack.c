@@ -1,6 +1,7 @@
 // LIST PROCESSING PACKAGE (FOR 2960/EMAS)    DAT 23/11/79
 // WARNING - MUCH OF THIS CODE IS MACHINE DEPENDENT
 #include "listhdr.h"
+#include "comphdr.h"
 
 //----------------------------------------------------------------------
 //The KRC system is Copyright (c) D. A. Turner 1981
@@ -64,7 +65,7 @@ static void GC(void);
 static void COPY(LIST *P);
 static void COPYHEADS(void);
 
-void main2();
+void main2(void);
 
 int
 main(int argc, char **argv)
@@ -215,7 +216,6 @@ GC3(jmp_buf *envp, LIST *STACKEND)
    {  LIST *P;		// Examine every pointer on the stack
 			// P is a pointer to pointer, so incrementing it
 			// moved it up by the size of one pointer.
-      extern VOID HOLD_INTERRUPTS(), RELEASE_INTERRUPTS(); // In MAIN.c
 
 #ifdef DEBUG_GC
 int LASTUSED = 0;

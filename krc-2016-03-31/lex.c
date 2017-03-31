@@ -2,6 +2,7 @@
 #include "emas.h"
 #include "listhdr.h"
 #include "comphdr.h"
+#include "redhdr.h"
 
 #include <ctype.h>
 
