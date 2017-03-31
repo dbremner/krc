@@ -80,7 +80,7 @@ main(int argc, char **argv)
       IF argc>1 && argv[1][0]=='-' && strchr(argv[1], ' ') != NULL DO {
 	 int nspaces=0; char *cp;
          // Allocate space for new ARGV
-	 FOR (cp=argv[1]+1; *cp; cp++) IF *cp==' ' DO nspaces++;
+	 for (cp=argv[1]+1; *cp; cp++) IF *cp==' ' DO nspaces++;
 	 // Each space generates one more argument
          ARGV=calloc(argc+nspaces, sizeof(char *));
 	 IF ARGV==NULL DO exit(1);
@@ -88,7 +88,7 @@ main(int argc, char **argv)
          // Rewrite ARGV splitting up the first arg
 	 // If we find "-e ", all the rest is a single expression
          ARGV[0]=argv[0]; ARGC=1;
-   	 FOR (cp=argv[1]; *cp; ) {
+   	 for (cp=argv[1]; *cp; ) {
             // Plant another argument
 	    ARGV[ARGC++]=cp;
             // Find end of arg

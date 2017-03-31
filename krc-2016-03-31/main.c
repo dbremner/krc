@@ -232,7 +232,7 @@ INITIALISE()
       IF !isatty(0) DO QUIET=TRUE;
 
       SETUP_PRIMFNS_ETC();
-      FOR (I=1; I<ARGC; I++) {
+      for (I=1; I<ARGC; I++) {
          TEST ARGV[I][0]=='-' THEN
             switch( ARGV[I][1] ) {
 	    case 'n': LOADPRELUDE=FALSE;
@@ -313,7 +313,7 @@ ENTERARGV(int USERARGC, LIST USERARGV)
    LIST CODE=CONS((LIST)FORMLIST_C,
 		  CONS((LIST)USERARGC,
                        CONS((LIST)STOP_C, NIL)));
-   FOR ( ;USERARGV != NIL; USERARGV=TL(USERARGV))
+   for ( ;USERARGV != NIL; USERARGV=TL(USERARGV))
       CODE=CONS((LIST)LOAD_C,
                 CONS(CONS((LIST)QUOTE, HD(USERARGV)),CODE));
    VAL(A) = CONS(CONS((LIST)0, NIL),
@@ -875,7 +875,7 @@ RENAMECOM()
                   IF NARGS>0
                   DO {  LIST LHS=HD(HD(EQNS));
 			WORD I;
-                        FOR (I=2; I<=NARGS; I++)
+                        for (I=2; I<=NARGS; I++)
                            LHS=HD(LHS);
                         HD(LHS)=SUBST(Z,HD(LHS)); }
                   WHILE ISCONS(CODE)
@@ -1052,7 +1052,7 @@ REORDERCOM()
                  WORD B = HAVE(DOTDOT_SY) ?
                          HAVENUM()? THE_NUM : MAX :  A;
 		 WORD I;
-                 FOR (I=A; I<=B; I++)
+                 for (I=A; I<=B; I++)
                     IF !MEMBER(NOS,(LIST)I) && 1<=I && I<=MAX
                     DO NOS=CONS((LIST)I,NOS);
                     //NOS OUT OF RANGE ARE SILENTLY IGNORED
@@ -1064,7 +1064,7 @@ REORDERCOM()
                  return;  }
            IF PROTECTED(THE_ID) DO return;
            {  WORD I;
-	      FOR (I=1; I<= MAX; I++)
+	      for (I=1; I<= MAX; I++)
               UNLESS MEMBER(NOS,(LIST)I)
               DO NOS=CONS((LIST)I,NOS);
               // ANY EQNS LEFT OUT ARE TACKED ON AT THE END
@@ -1159,7 +1159,7 @@ DELETECOM()
                   WORD B = HAVE(DOTDOT_SY) ?
                           HAVENUM()?THE_NUM:MAX : A;
 		  WORD I;
-                  FOR (I=A; I<=B; I++)
+                  for (I=A; I<=B; I++)
                      NLIST=CONS((LIST)I,NLIST);
                }
             DLIST=CONS(CONS((LIST)THE_ID,NLIST),DLIST);
@@ -1195,7 +1195,7 @@ DELETECOM()
                     continue;  }
             OR {
 		WORD I;
-		FOR (I=NO_OF_EQNS(NAME); I>=1; I=I-1)
+		for (I=NO_OF_EQNS(NAME); I>=1; I=I-1)
                   TEST MEMBER(NOS,(LIST)I)
                   THEN DELS=DELS+1;
                   OR {  LIST EQN=ELEM(TL(VAL(NAME)),I);

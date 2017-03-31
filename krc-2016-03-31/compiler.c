@@ -298,7 +298,7 @@ DISPLAY(ATOM ID, BOOL WITHNOS, BOOL DOUBLESPACING)
             IF DOUBLESPACING DO NEWLINE();  }
       IF COMMENT!=NIL && N==1 && HD(TL(HD(EQNS)))==(LIST)CALL_C 
 	 DO return;
-      FOR (I=1; I<=N; I++)
+      for (I=1; I<=N; I++)
          {  TEST WITHNOS && (N>1 || COMMENT!=NIL)
             THEN WRITEF("%2" W ") ",I);
             OR WRITES("    ");
@@ -365,7 +365,7 @@ DISPLAYRHS(LIST LHS, WORD NARGS, LIST CODE)
          case FORMLIST_C: CODE=TL(CODE);
                           I=I+1;
                           V[I]=NIL;
-                          FOR (J=1; J<=(WORD)(HD(CODE)); J++)
+                          for (J=1; J<=(WORD)(HD(CODE)); J++)
                              {  I=I-1;
                                 V[I]=CONS((LIST)COLON_OP,CONS(V[I],V[I+1]));
                              }
@@ -373,13 +373,13 @@ DISPLAYRHS(LIST LHS, WORD NARGS, LIST CODE)
          case FORMZF_C: CODE=TL(CODE);
                         I=I-(WORD)(HD(CODE));
                         V[I]=CONS(V[I],NIL);
-                        FOR (J=(WORD)(HD(CODE)); J>=1; J=J-1)
+                        for (J=(WORD)(HD(CODE)); J>=1; J=J-1)
                            V[I] = CONS(V[I+J],V[I]);
                         V[I] = CONS((LIST)ZF_OP,V[I]);
                         break; 
          case CONT_GENERATOR_C:
                 CODE = TL(CODE);
-                FOR (J=1; J<=(WORD)(HD(CODE)); J++)
+                for (J=1; J<=(WORD)(HD(CODE)); J++)
                    V[I-J] = CONS((LIST)GENERATOR,CONS(V[I-J],
                                     TL(TL(V[I]))));
                 break; 
@@ -529,7 +529,7 @@ EXPR(WORD N)  //N IS THE PRIORITY LEVEL
                   EXPR(4);
                   IF ERRORFLAG DO return;  }
             PLANT1(APPLYINFIX_C,(LIST)OP);
-            FOR (I=1; I<=AND_COUNT; I++)
+            for (I=1; I<=AND_COUNT; I++)
 	       PLANT1(APPLYINFIX_C,(LIST)AND_OP);
                         //FOR CONTINUED RELATIONS
             OP=MKINFIX(HD(TOKENS));  }
@@ -736,10 +736,10 @@ static VOID
 COMPILELHS(LIST LHS, WORD NARGS)
    {  WORD I;
       ENVP=NARGS-1;
-      FOR (I=1; I<=NARGS; I++)
+      for (I=1; I<=NARGS; I++)
       {  ENV[NARGS-I]=TL(LHS);
          LHS=HD(LHS);  }
-      FOR (I=0; I<=NARGS-1; I++) COMPILEFORMAL(ENV[I],I);
+      for (I=0; I<=NARGS-1; I++) COMPILEFORMAL(ENV[I],I);
    }
 
 static VOID
@@ -802,5 +802,5 @@ COMPILER_BASES(VOID (*F)(LIST *))
 
    F(&CODEV);
    // ENVP indexes the last used element and starts as -1.
-   FOR (I=0; I<=ENVP ; I++) F(&ENV[I]);
+   for (I=0; I<=ENVP ; I++) F(&ENV[I]);
 }

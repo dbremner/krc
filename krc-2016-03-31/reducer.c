@@ -211,10 +211,10 @@ PRINTATOM(ATOM A,BOOL FORMAT)
    THEN 
         { int I; //DT 2015
           WRCH('"');
-          FOR (I=1; I<=LEN(A); I++) SHOWCH(NAME(A)[I]);
+          for (I=1; I<=LEN(A); I++) SHOWCH(NAME(A)[I]);
           WRCH('"'); }
    OR { int I;  // OUTPUT THE BCPL STRING PRESERVING nulS
-        FOR (I=1; I<=LEN(A); I++) WRCH(NAME(A)[I]);  }
+        for (I=1; I<=LEN(A); I++) WRCH(NAME(A)[I]);  }
 }
 
 static VOID
