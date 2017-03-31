@@ -1188,7 +1188,7 @@ DELETECOM()
             IF VAL(NAME) == NIL
             DO {  DISPLAY(NAME,FALSE,FALSE);
                   continue; }
-            IF PROTECTED(NAME) DO LOOP
+             IF PROTECTED(NAME) DO continue;
             TEST NOS==NIL
             THEN {  DELS=DELS+NO_OF_EQNS(NAME);
                     REMOVE(NAME);
