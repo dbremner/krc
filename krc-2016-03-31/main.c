@@ -23,10 +23,26 @@
 #include <signal.h>
 
 // Local function declarations
-static VOID DIRCOM(), DISPLAYCOM(), QUITCOM(), OBJECTCOM();
-static VOID RESETCOM(), GCCOM(), COUNTCOM(), SAVECOM(), FILECOM(), GETCOM();
-static VOID LISTCOM(), NAMESCOM(), LIBCOM(), CLEARCOM(), OPENLIBCOM();
-static VOID HELPCOM(), RENAMECOM(), ABORDERCOM(), REORDERCOM(), DELETECOM();
+static VOID DIRCOM();
+static VOID DISPLAYCOM();
+static VOID QUITCOM();
+static VOID OBJECTCOM();
+static VOID RESETCOM();
+static VOID GCCOM();
+static VOID COUNTCOM();
+static VOID SAVECOM();
+static VOID FILECOM();
+static VOID GETCOM();
+static VOID LISTCOM();
+static VOID NAMESCOM();
+static VOID LIBCOM();
+static VOID CLEARCOM();
+static VOID OPENLIBCOM();
+static VOID HELPCOM();
+static VOID RENAMECOM();
+static VOID ABORDERCOM();
+static VOID REORDERCOM();
+static VOID DELETECOM();
 static BOOL STARTDISPLAYCOM();
 
 static VOID PARSELINE(char *line);
