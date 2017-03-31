@@ -616,7 +616,7 @@ MAKESURE()
    WRITES("Are you sure? ");
 {  WORD CH=RDCH(), C;
    UNRDCH(CH);
-   UNTIL (C=RDCH())=='\n' || C == EOF DO LOOP
+   UNTIL (C=RDCH())=='\n' || C == EOF DO continue;
    IF CH=='y' || CH=='Y' DO return TRUE;
    WRITES("Command ignored\n");
    return FALSE;
@@ -722,7 +722,7 @@ GETFILE(char *FILENAME)
 	    ERRORFLAG=TRUE;
 	    break;;
          }
-         IF HAVE(EOL) DO LOOP;  
+         IF HAVE(EOL) DO continue;;  
          IF HD(TOKENS)==ENDSTREAMCH
          DO break;
          TEST COMMENTFLAG
@@ -805,7 +805,7 @@ SCRIPTLIST(LIST S)
 #define LINEWIDTH 68  //THE MINIMUM OF VARIOUS DEVICES
       UNTIL S==NIL
       DO {  char *N = PRINTNAME((ATOM)HD(S));
-            IF PRIMITIVE((ATOM)HD(S)) DO {S=TL(S); LOOP}
+            IF PRIMITIVE((ATOM)HD(S)) DO {S=TL(S); continue;}
             COL=COL+strlen(N)+1;
             IF COL>LINEWIDTH
             DO  {  COL=0 ; NEWLINE();  }
@@ -1187,12 +1187,12 @@ DELETECOM()
             DLIST=TL(DLIST);
             IF VAL(NAME) == NIL
             DO {  DISPLAY(NAME,FALSE,FALSE);
-                  LOOP }
+                  continue; }
             IF PROTECTED(NAME) DO LOOP
             TEST NOS==NIL
             THEN {  DELS=DELS+NO_OF_EQNS(NAME);
                     REMOVE(NAME);
-                    LOOP  }
+                    continue;  }
             OR {
 		WORD I;
 		FOR (I=NO_OF_EQNS(NAME); I>=1; I=I-1)

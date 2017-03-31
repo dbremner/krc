@@ -613,7 +613,7 @@ REDUCE(LIST E)
             case INDIR: {  LIST HOLD=HD(S);
                            NARGS=NARGS-1;
                            E=TL(S),HD(S)=(LIST)INDIR,S=HOLD;
-                           LOOP;  }
+                           continue;;  }
             case QUOTE_OP: UNLESS NARGS>=3 DO goto BREAK_MAIN_LOOP;
                         {  LIST OP=TL(S);
                            LIST HOLD=HD(S);
@@ -622,10 +622,10 @@ REDUCE(LIST E)
                            HOLD=HD(S);
                            HD(S)=E,E=S,S=HOLD;
                            TL(S)=CONS(TL(E),TL(S)),E=OP;
-                           LOOP;  }
+                           continue;;  }
             case LISTDIFF_OP: E=CONS((LIST)LISTDIFF,HD(TL(S)));
                               TL(S)=TL(TL(S));
-                              LOOP;
+                              continue;;
             case COLON_OP: UNLESS NARGS>=2 DO goto BREAK_MAIN_LOOP;
                            //LIST INDEXING
                            NARGS=NARGS-2;
@@ -642,13 +642,13 @@ REDUCE(LIST E)
                            HOLD=HD(S);
                            HD(S)=(LIST)INDIR,TL(S)=E,S=HOLD;
                            REDS=REDS+1;
-                           LOOP; }
+                           continue;; }
             case ZF_OP: {  LIST HOLD=HD(S);
                            NARGS=NARGS-1;
                            HD(S)=E,E=S,S=HOLD;
                            IF TL(TL(E))==NIL
                            DO {  HD(E)=(LIST)COLON_OP,TL(E)=CONS(HD(TL(E)),NIL);
-                                 LOOP;  }
+                                 continue;;  }
                         {  LIST QUALIFIER=HD(TL(E));
                            LIST REST=TL(TL(E));
                            TEST ISCONS(QUALIFIER)&&HD(QUALIFIER)==(LIST)GENERATOR
@@ -680,7 +680,7 @@ REDUCE(LIST E)
                                  THEN HD(E)=(LIST)INDIR,TL(E)=NIL,E=NIL;
                                  OR BADEXP(CONS((LIST)GUARD,QUALIFIER));  }
                            REDS=REDS+1;
-                           LOOP;  }  }
+                           continue;;  }  }
             case DOT_OP: UNLESS NARGS>=2
                          DO {  LIST A=REDUCE(HD(TL(S))),B=REDUCE(TL(TL(S)));
                                UNLESS ISFUN(A) && ISFUN(B)
@@ -691,7 +691,7 @@ REDUCE(LIST E)
                          E=HD(TL(S)),TL(HOLD)=CONS(TL(TL(S)),TL(HOLD));
                          HD(S)=(LIST)DOT_OP,S=HOLD;
                          REDS=REDS+1;
-                         LOOP;  }
+                         continue;;  }
             case EQ_OP:
             case NE_OP: E=EQUALVAL(HD(TL(S)),TL(TL(S)))==(E==(LIST)EQ_OP)?
                            TRUTH:FALSITY;
@@ -701,7 +701,7 @@ REDUCE(LIST E)
                         NARGS=NARGS-1;
                         HD(S)=(LIST)INDIR,TL(S)=E,S=HOLD;
                         REDS=REDS+1;
-                        LOOP;  }
+                        continue;;  }
             case ENDOFSTACK: BADEXP((LIST)SILLYNESS); //OCCURS IF WE TRY TO
                                  //EVALUATE AN EXP WE ARE ALREADY INSIDE
             default: break;   }  //END OF SWITCH
@@ -745,13 +745,13 @@ REDUCE(LIST E)
                                               CONS(TL(TL(A)),B));
                                   HD(TL(S))=HD(TL(A));
                                   REDS=REDS+1;
-                                  LOOP
+                                  continue;
                   case DOTDOT_OP: IF M>N DO { E=NIL; break;  }
                                   E=(LIST)COLON_OP;
                                   TL(TL(S))=CONS((LIST)DOTDOT_OP,
                                              CONS(STONUM(M+1),B));
                                   REDS=REDS+1;
-                                  LOOP
+                                  continue;
                   case COMMADOTDOT_OP: {  WORD M1=M,N1=N;//REDUCE clobbers M,N
                                           LIST C=REDUCE(TL(TL(TL(S))));
                                           static WORD P=0;
@@ -765,7 +765,7 @@ REDUCE(LIST E)
                                           TL(TL(S))=CONS((LIST)COMMADOTDOT_OP,
                                                      CONS(B,TL(TL(S))));
                                           REDS=REDS+1;
-                                          LOOP  }
+                                          continue;  }
                   case NOT_OP: TEST A==TRUTH THEN E=FALSITY; OR
                                TEST A==FALSITY THEN E=TRUTH; OR
                                BADEXP(CONS(E,A));

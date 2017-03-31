@@ -56,7 +56,7 @@ READLINE()
 			T==(TOKEN)BADTOKEN);
       // Ignore first line of Unix script file
       IF HD(TOKENS)==(LIST)'#' && ISCONS(TL(TOKENS)) &&
-         HD(TL(TOKENS))==(LIST)'!' DO LOOP;
+         HD(TL(TOKENS))==(LIST)'!' DO continue;;
       IF T==(TOKEN)EOL || T==(TOKEN)ENDSTREAMCH DO return;
       WRITES("Closing quote missing - line ignored\n");
       ERRORFLAG=TRUE; return;

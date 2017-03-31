@@ -641,7 +641,7 @@ PERFORM_ALPHA_CONVERSIONS()
       UNTIL HD(P)==(TOKEN)'}' || HD(P)==(TOKEN)']' || HD(P)==EOL
       DO {  IF HD(P)==(TOKEN)'[' || HD(P)==(TOKEN)'{'
             DO {  P = SKIPCHUNK(P);
-                  LOOP;  }
+                  continue;;  }
             IF HD(P)==(TOKEN)'|' && ISID(HD(TL(P))) && ISGENERATOR(TL(TL(P)))
             DO HD(P) = (TOKEN)';' ;
             IF ISID(HD(P)) && ISGENERATOR(TL(P))
