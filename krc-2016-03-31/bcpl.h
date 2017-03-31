@@ -48,7 +48,7 @@ typedef WORD BOOL;	// Not BCPL but...
 #define WHILE while((			// Use: WHILE x DO baz;
 #define DO ))
 #define REPEATUNTIL(p) while(!(p));	// Use: do{...}REPEATUNTIL(p);
-#define REPEATWHILE(p) while(p);	// Use: do{...}REPEATWHILE(p);
+//#define REPEATWHILE(p) while(p);	// Use: do{...}REPEATWHILE(p);
 #define REPEAT while(1);		// Use: do{...}REPEAT;
 //#define BREAK break;
 #define LOOP continue;

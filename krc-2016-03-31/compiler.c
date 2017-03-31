@@ -590,7 +590,7 @@ SIMPLE()
                       //NO LONGER LEGAL
             //THEN TOKENS=HOLD; OR
             CHECK((TOKEN)';');
-            do N = N + QUALIFIER(); REPEATWHILE(HAVE((TOKEN)';'));
+            do N = N + QUALIFIER(); while(HAVE((TOKEN)';'));
             PLANT1(FORMZF_C,(LIST)N); // OK
             CHECK((TOKEN)'}'); }  OR
    TEST HAVE((TOKEN)'\'') //OPERATOR DENOTATION
@@ -624,7 +624,7 @@ QUALIFIER()
               HAVEID();
               PLANT1(LOAD_C,(LIST)THE_ID);
               N = N+1;
-           } REPEATWHILE(HAVE((TOKEN)','));
+           } while(HAVE((TOKEN)','));
            CHECK(BACKARROW_SY);
            EXPR(0);
            PLANT1(APPLYINFIX_C,(LIST)GENERATOR);
@@ -706,7 +706,7 @@ LIST FORMAL()
    THEN {  LIST PLIST=NIL,P=NIL;
            IF HAVE((TOKEN)']') DO return NIL;
            do PLIST=CONS(PATTERN(),PLIST);
-           REPEATWHILE(HAVE((TOKEN)','));  //NOTE THEY ARE IN REVERSE ORDER
+           while(HAVE((TOKEN)','));  //NOTE THEY ARE IN REVERSE ORDER
            CHECK((TOKEN)']');
            UNTIL PLIST==NIL
            DO {  P=CONS((TOKEN)COLON_OP,CONS(HD(PLIST),P));

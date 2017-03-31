@@ -78,7 +78,7 @@ READTOKEN(void)
 	|| (EXPECTFILE && !isspace(CH))
    DO {do{  BUFCH(CH);
             CH=RDCH();
-         } REPEATWHILE ('a'<=CH&&CH<='z'||'A'<=CH&&CH<='Z'||
+         } while ('a'<=CH&&CH<='z'||'A'<=CH&&CH<='Z'||
 			isdigit(CH)||CH=='\''||CH=='_'||
 			(EXPECTFILE && !isspace(CH)));
          UNRDCH(CH);
@@ -162,7 +162,7 @@ READTOKEN(void)
          DO TEST CH=='\n'
             THEN {  C=CONS((LIST)PACKBUFFER(),C);
                     do { COMMENTFLAG++;
-                         CH=RDCH(); } REPEATWHILE (CH=='\n');
+                         CH=RDCH(); } while (CH=='\n');
                                     //IGNORE BLANK LINES
                  }
             OR {  BUFCH(CH); CH=RDCH();  }
