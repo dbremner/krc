@@ -38,8 +38,8 @@ INIT_ARGSPACE(VOID)
       int NARGS=SPACE/5;        // Empirically, using edigits, with SPACE/6,
                                 // the argstack exhausts first. with /5, it
                                 // runs out of heap first.
-      ARGSPACE=(LIST *)sbrk(NARGS*sizeof(*ARGSPACE));
-      IF ARGSPACE==(void *)-1 DO SPACE_ERROR("Cannot allocate argument stack");
+      ARGSPACE=(LIST *)calloc(NARGS,sizeof(*ARGSPACE));
+      IF ARGSPACE==NULL DO SPACE_ERROR("Cannot allocate argument stack");
       ARGMAX=ARGSPACE+NARGS-1;
    }
    ARG=ARGSPACE, ARGP=ARG-1;
