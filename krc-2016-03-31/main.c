@@ -522,8 +522,7 @@ HELPCOM()
   UNLESS topic && HAVE(EOL)
   DO { WRITES("/h What? `/h' for options\n");
        return; }
-  strncpy(strbuf,local?HELPLOCAL:HELP,BUFLEN);
-  strncat(strbuf,topic,BUFLEN-strlen(strbuf));
+  snprintf(strbuf, sizeof(strbuf), "%s%s", local?HELPLOCAL:HELP, topic);
   r=system(strbuf); }
 
 static VOID
