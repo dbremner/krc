@@ -4,21 +4,13 @@
 
 #include <stdio.h>	// For printf etc
 #include <stdlib.h>	// For exit()
-#include <limits.h>	// for __WORDSIZE
-
-#if __WORDSIZE==64
+#include <stdint.h> // for intptr_t
+#include <inttypes.h>
 
 // Type for machine words, used for all integer variables.
-typedef long long WORD;	// 64-bit value.
+typedef intptr_t WORD;	// 32-bit or 64-bit value.
 // Printf/scanf format to use with WORDs
-#define W "lld"
-
-#else
-
-typedef int WORD;	// 32-bit value.
-#define W "d"
-
-#endif
+#define W PRIdPTR
 
 // Trap broken compiler versions here, as it is included by everything
 // Definitely doesn't work with gcc-4.9.[012]
