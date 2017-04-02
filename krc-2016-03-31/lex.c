@@ -17,7 +17,10 @@
 #define DECIMALS 0	// code for reading decimals in equation numbers is ill
 
 // Global variables owned by lex.c
-WORD ERRORFLAG, EQNFLAG, EXPFLAG, COMMENTFLAG;
+BOOL ERRORFLAG;
+BOOL EQNFLAG;
+BOOL EXPFLAG;
+WORD COMMENTFLAG;
 BOOL SKIPCOMMENTS;
 LIST TOKENS = 0;
 ATOM THE_ID = 0;
