@@ -17,7 +17,7 @@
 
 // Global variables owned by reducer
 LIST MEMORIES = NIL;
-WORD REDS;
+static WORD REDS;
 WORD LISTBASE=0;   //base for list indexing
 BOOL ABORTED=FALSE;
 
