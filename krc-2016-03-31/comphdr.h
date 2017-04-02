@@ -29,7 +29,7 @@ extern ATOM	THE_ID;                         // BASES
 extern WORD	THE_NUM, THE_DECIMALS;		// DECIMALS are never used
 extern BOOL ERRORFLAG;
 extern BOOL EQNFLAG;
-extern BOOL	EXPFLAG;
+extern BOOL EXPFLAG;
 extern TOKEN	MISSEDTOK;
 extern WORD CASECONV(WORD CH);
 extern WORD	COMMENTFLAG;
