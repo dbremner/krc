@@ -30,8 +30,8 @@ static LIST *ARG;
 static LIST *ARGMAX;
 static LIST *ARGP;
 
-VOID
-INIT_ARGSPACE(VOID)
+void
+INIT_ARGSPACE(void)
 {
    IF ARGSPACE==NULL DO {
       extern int SPACE;         // Number of LIST cells, in listpack.c
@@ -51,46 +51,46 @@ INIT_ARGSPACE(VOID)
 LIST S;
 
 // Local function declarations
-static VOID SIZE(LIST E);
+static void SIZE(LIST E);
 
 //PRIMITIVE FUNCTIONS
-static VOID FUNCTIONP(LIST E);
-static VOID LISTP(LIST E);
-static VOID STRINGP(LIST E);
-static VOID NUMBERP(LIST E);
-static VOID CHAR(LIST E);
-static VOID SIZE(LIST E);
-static VOID CODE(LIST E);
-static VOID DECODE(LIST E);
-static VOID CONCAT(LIST E);
-static VOID EXPLODE(LIST E);
-static VOID ABORT(LIST E);
-static VOID STARTREAD(LIST E);
-static VOID READ(LIST E);
-static VOID WRITEAP(LIST E);
-static VOID SEQ(LIST E);
+static void FUNCTIONP(LIST E);
+static void LISTP(LIST E);
+static void STRINGP(LIST E);
+static void NUMBERP(LIST E);
+static void CHAR(LIST E);
+static void SIZE(LIST E);
+static void CODE(LIST E);
+static void DECODE(LIST E);
+static void CONCAT(LIST E);
+static void EXPLODE(LIST E);
+static void ABORT(LIST E);
+static void STARTREAD(LIST E);
+static void READ(LIST E);
+static void WRITEAP(LIST E);
+static void SEQ(LIST E);
 
 // LOCAL FUNCTION DELARATIONS
-static VOID PRINTFUNCTION(LIST E);
+static void PRINTFUNCTION(LIST E);
 static BOOL EQUALVAL(LIST A,LIST B);
-static VOID BADEXP(LIST E);
-static VOID OVERFLOW(LIST E);
-static VOID OBEY(LIST EQNS,LIST E);
+static void BADEXP(LIST E);
+static void OVERFLOW(LIST E);
+static void OBEY(LIST EQNS,LIST E);
 static BOOL ISFUN(LIST X);
 static LIST REDUCE(LIST E);
 static LIST SUBSTITUTE(LIST ACTUAL,LIST FORMAL,LIST EXP);
 static BOOL BINDS(LIST FORMAL,LIST X);
-static VOID SHOWCH(unsigned char c); //DT 2015
+static void SHOWCH(unsigned char c); //DT 2015
 
-static VOID
+static void
 R(char *S, void (*F)(LIST), WORD N)
    {  ATOM A=MKATOM(S);
       LIST EQN=CONS((LIST)A,CONS((LIST)CALL_C,(LIST)F));
       UNLESS F==READ DO ENTERSCRIPT(A);
       VAL(A)=CONS(CONS((LIST)N,NIL),CONS(EQN,NIL));  }
 
-VOID
-SETUP_PRIMFNS_ETC(VOID)
+void
+SETUP_PRIMFNS_ETC(void)
    {
       S=(LIST)ENDOFSTACK;  //S IS USED INSIDE REDUCE
       ETC=MKATOM("... ");  //MISCELLANEOUS INITIALISATIONS
@@ -123,8 +123,8 @@ SETUP_PRIMFNS_ETC(VOID)
 
 // LITTLE ROUTINE TO AVOID S HAVING TO BE GLOBAL, JUST BECAUSE
 // IT MAY NEED FIXING UP AFTER AN INTERRUPT. THIS ROUTINE DOES THAT.
-VOID
-FIXUP_S(VOID)
+void
+FIXUP_S(void)
 {
    UNLESS S==(LIST)ENDOFSTACK
    DO HD(S)=(LIST)QUOTE; //IN CASE INTERRUPT STRUCK WHILE REDUCE
@@ -143,13 +143,13 @@ SCASECONV(char *S)
    *q = '\0';
    return T;  }
 
-VOID
+void
 INITSTATS()
 {
    REDS=0;
 }
 
-VOID
+void
 OUTSTATS()
    { WRITEF("reductions = %" W "\n",REDS);  }
 
@@ -159,7 +159,7 @@ OUTSTATS()
 //  LIST:= NIL | CONS(COLON_OP,CONS(EXP,EXP))
 //  FUNCTION:= NAME | CONS(E1,E2)
 
-VOID
+void
 PRINTVAL(LIST E, BOOL FORMAT)
    {  E=REDUCE(E);
       TEST E==NIL
@@ -205,7 +205,7 @@ PRINTVAL(LIST E, BOOL FORMAT)
                         //NAME OF FUNCTION
    }
 
-VOID 
+void 
 PRINTATOM(ATOM A,BOOL FORMAT)
 {  TEST FORMAT
    THEN 
@@ -217,7 +217,7 @@ PRINTATOM(ATOM A,BOOL FORMAT)
         for (I=1; I<=LEN(A); I++) WRCH(NAME(A)[I]);  }
 }
 
-static VOID
+static void
 SHOWCH(unsigned char c)
 { switch(c)
   { case '\a': WRCH('\\'); WRCH('a'); break;
@@ -235,7 +235,7 @@ SHOWCH(unsigned char c)
              OR WRCH(c);
 } }
 
-static VOID
+static void
 PRINTFUNCTION(LIST E)
    {  WRCH('<');
       PRINTEXP(E,0);
@@ -257,7 +257,7 @@ EQUALVAL(LIST A,LIST B) //UNPREDICTABLE RESULTS IF A,B BOTH FUNCTIONS
    A=TL(A),B=TL(B);
 } REPEAT }
 
-static VOID
+static void
 BADEXP(LIST E) //CALLED FOR ALL EVALUATION ERRORS
    {  _WRCH=TRUEWRCH;
       CLOSECHANNELS();
@@ -271,7 +271,7 @@ BADEXP(LIST E) //CALLED FOR ALL EVALUATION ERRORS
       ESCAPETONEXTCOMMAND();
    }
 
-static VOID
+static void
 OVERFLOW(LIST E) // INTEGER OVERFLOW HANDLER
    {  _WRCH=TRUEWRCH;
       CLOSECHANNELS();
@@ -289,7 +289,7 @@ BUILDEXP(LIST CODE)       //A KLUDGE
    return E;
 }
 
-static VOID
+static void
 OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                        //WITH EQNS - ACTUAL PARAMS ARE FOUND IN
                        // *ARG ... *ARGP
@@ -382,7 +382,7 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
                            break; 
             case STOP_C: HD(E)=(LIST)INDIR,TL(E)=*ARGP;
                          return;
-            case CALL_C: (*(VOID (*)())CODE)(E);
+            case CALL_C: (*(void (*)())CODE)(E);
                          return;
             default: WRITEF("IMPOSSIBLE INSTRUCTION <%p> IN \"OBEY\"\n", H);
          }  }  REPEAT  //END OF DECODE LOOP
@@ -393,19 +393,19 @@ BREAK_DECODE_LOOP:
    BADEXP(E);
 }
 
-static VOID
+static void
 STRINGP(LIST E)
    {  *ARG=REDUCE(*ARG);
       HD(E)=(LIST)INDIR,TL(E)=ISCONS(*ARG)&&HD(*ARG)==(LIST)QUOTE ? TRUTH:FALSITY;
    }
 
-static VOID
+static void
 NUMBERP(LIST E)
    {  *ARG=REDUCE(*ARG);
       HD(E)=(LIST)INDIR,TL(E)=ISNUM(*ARG)?TRUTH:FALSITY;
    }
 
-static VOID
+static void
 LISTP(LIST E)
    {  *ARG=REDUCE(*ARG);
       HD(E)=(LIST)INDIR;
@@ -413,7 +413,7 @@ LISTP(LIST E)
                        TRUTH:FALSITY;
    }
 
-static VOID
+static void
 FUNCTIONP(LIST E)
    {  *ARG=REDUCE(*ARG);
       HD(E)=(LIST)INDIR;
@@ -424,7 +424,7 @@ static BOOL
 ISFUN(LIST X)
 { return ISATOM(X) || (ISCONS(X) && QUOTE!=HD(X) && HD(X)!=(LIST)COLON_OP); }
 
-static VOID
+static void
 CHAR(LIST E)
    {  *ARG=REDUCE(*ARG);
       HD(E)=(LIST)INDIR;
@@ -433,10 +433,10 @@ CHAR(LIST E)
    }
 
 static WORD COUNT;
-static VOID
+static void
 COUNTCH(WORD CH) { COUNT=COUNT+1; }
 
-static VOID
+static void
 SIZE(LIST E)
    {
       COUNT=0;
@@ -446,7 +446,7 @@ SIZE(LIST E)
       HD(E)=(LIST)INDIR, TL(E)=STONUM(COUNT);
    }
 
-static VOID
+static void
 CODE(LIST E)
    {  *ARG = REDUCE(*ARG);
       UNLESS ISCONS(*ARG) && HD(*ARG)==QUOTE
@@ -456,7 +456,7 @@ CODE(LIST E)
       HD(E)=(LIST)INDIR, TL(E)=STONUM((WORD)NAME(A)[1] & 0xff);
    } }
 
-static VOID
+static void
 DECODE(LIST E)
    {  *ARG = REDUCE(*ARG);
       UNLESS ISNUM(*ARG) && 0<=(WORD)TL(*ARG) && (WORD)TL(*ARG)<=255
@@ -465,7 +465,7 @@ DECODE(LIST E)
       HD(E)=(LIST)INDIR, TL(E)=CONS((LIST)QUOTE,(LIST)PACKBUFFER());
    }
 
-static VOID
+static void
 CONCAT(LIST E)
    {  *ARG = REDUCE(*ARG);
    {  LIST A = *ARG;
@@ -492,7 +492,7 @@ CONCAT(LIST E)
               CONS((LIST)QUOTE,A);
    } }
 
-static VOID
+static void
 EXPLODE(LIST E)
    {  *ARG = REDUCE(*ARG);
       UNLESS ISCONS(*ARG) && HD(*ARG)==(LIST)QUOTE
@@ -506,7 +506,7 @@ EXPLODE(LIST E)
       HD(E)=(LIST)INDIR, TL(E)=X;
    } }
 
-static VOID
+static void
 ABORT(LIST E)
    { FILE *HOLD=OUTPUT();
      SELECTOUTPUT(stderr);
@@ -518,7 +518,7 @@ ABORT(LIST E)
      raise(SIGINT);
    }
 
-static VOID
+static void
 STARTREAD(LIST E)
    {  *ARG=REDUCE(*ARG);
       UNLESS ISCONS(*ARG) && HD(*ARG)==(LIST)QUOTE
@@ -529,7 +529,7 @@ STARTREAD(LIST E)
       HD(E)=(LIST)READFN,TL(E)=(LIST)IN;
    } }
 
-static VOID
+static void
 READ(LIST E)
    {  FILE *IN=(FILE *)TL(E);
       SELECTINPUT(IN);
@@ -551,11 +551,11 @@ READ(LIST E)
       SELECTINPUT(SYSIN);
    } }
 
-static VOID
+static void
 WRITEAP(LIST E) //CALLED IF WRITE IS APPLIED TO >2 ARGS
    { BADEXP(E); }
 
-static VOID
+static void
 SEQ(LIST E)  //seq a b EVALUATES a THEN RETURNS b, ADDED DT 2015
    { REDUCE(TL(HD(E)));
      HD(E)=(LIST)INDIR;
@@ -860,8 +860,8 @@ BINDS(LIST FORMAL,LIST X)
 
 // Mark elements in the argument stack for preservation by the GC.
 // This routine should be called by your BASES() function.
-VOID
-REDUCER_BASES(VOID (*F)(LIST *))
+void
+REDUCER_BASES(void (*F)(LIST *))
 {  LIST *AP;
 
    for (AP=ARGSPACE; AP<=ARGP; AP++)

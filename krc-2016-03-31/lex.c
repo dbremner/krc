@@ -40,7 +40,7 @@ static BOOL EXPECTFILE=FALSE;
 static TOKEN MISSING;
 
 // READS THE NEXT LINE INTO "TOKENS"
-VOID
+void
 READLINE()
 {  do
    {  LIST *P=&TOKENS;
@@ -239,7 +239,7 @@ PEEKALPHA()
    return (('a'<=CH && CH<='z') || ('A'<=CH && CH<='Z'));
 }
 
-VOID
+void
 WRITETOKEN(TOKEN T)
 {  TEST T<(TOKEN)256 && T>(TOKEN)32 THEN WRCH((WORD)T); OR
    switch(  (WORD)T )
@@ -270,13 +270,13 @@ HAVE(TOKEN T)
    TOKENS=TL(TOKENS);
    return TRUE; }
 
-VOID
+void
 CHECK(TOKEN T)
 { IF HAVE(T) DO return;
   ERRORFLAG=TRUE;
   IF MISSING==0 DO MISSING=T; }
 
-VOID
+void
 SYNTAX()
 {  ERRORFLAG=TRUE; }
 
@@ -304,7 +304,7 @@ HAVENUM()
    TOKENS=TL(TOKENS);
    return TRUE;  }
 
-VOID
+void
 SYNTAX_ERROR(char *message) //syntax error diagnosis (needs refining)
 {  IF ISCONS(TOKENS) && HD(TOKENS)!=BADTOKEN //unclosed string quotes
    DO { WRITES("**unexpected `"),WRITETOKEN(HD(TOKENS)),WRCH('\'');

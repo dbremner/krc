@@ -18,7 +18,7 @@ static BOOL ISINFIX(LIST X);
 static BOOL ISRELOP(LIST X);
 static WORD DIPRIO(OPERATOR OP);
 static OPERATOR MKINFIX(TOKEN T);
-static VOID PRINTZF_EXP(LIST X);
+static void PRINTZF_EXP(LIST X);
 static BOOL ISLISTEXP(LIST E);
 static BOOL ISRELATION(LIST X);
 static BOOL ISRELATION_BEGINNING(LIST A,LIST X);
@@ -28,27 +28,27 @@ static BOOL ROTATE(LIST E);
 static BOOL PARMY(LIST X);
 static LIST REST(LIST C);
 static LIST SUBTRACT(LIST X, LIST Y);
-static VOID EXPR(WORD N);
+static void EXPR(WORD N);
 static BOOL STARTFORMAL(TOKEN T);
 static BOOL STARTSIMPLE(TOKEN T);
-static VOID COMBN(VOID);
-static VOID SIMPLE(VOID);
-static VOID COMPILENAME(ATOM N);
-static WORD QUALIFIER(VOID);
-static VOID PERFORM_ALPHA_CONVERSIONS();
+static void COMBN(void);
+static void SIMPLE(void);
+static void COMPILENAME(ATOM N);
+static WORD QUALIFIER(void);
+static void PERFORM_ALPHA_CONVERSIONS();
 static BOOL ISGENERATOR(LIST T);
-static VOID ALPHA_CONVERT(LIST VAR, LIST P);
+static void ALPHA_CONVERT(LIST VAR, LIST P);
 static LIST SKIPCHUNK(LIST P);
-static VOID CONV1(LIST T, LIST VAR, LIST VAR1);
-static LIST FORMAL(VOID);
+static void CONV1(LIST T, LIST VAR, LIST VAR1);
+static LIST FORMAL(void);
 static LIST INTERNALISE(LIST VAL);
-static LIST PATTERN(VOID);
-static VOID COMPILELHS(LIST LHS, WORD NARGS);
-static VOID COMPILEFORMAL(LIST X, WORD I);
-static VOID PLANT0(INSTRUCTION OP);
-static VOID PLANT1(INSTRUCTION OP, LIST A);
-static VOID PLANT2(INSTRUCTION OP, LIST A, LIST B);
-static LIST COLLECTCODE(VOID);
+static LIST PATTERN(void);
+static void COMPILELHS(LIST LHS, WORD NARGS);
+static void COMPILEFORMAL(LIST X, WORD I);
+static void PLANT0(INSTRUCTION OP);
+static void PLANT1(INSTRUCTION OP, LIST A);
+static void PLANT2(INSTRUCTION OP, LIST A, LIST B);
+static LIST COLLECTCODE(void);
 
 
 // Global variables
@@ -89,7 +89,7 @@ static LIST CODEV = NIL;// store for opcodes and ther params, which
 static LIST ENV[100];   // Appears to be a store for formal parameters
 static WORD ENVP;
 
-VOID
+void
 INIT_CODEV() {
    ENVP=-1;
    CODEV=NIL;
@@ -116,7 +116,7 @@ MKINFIX(TOKEN T)// TAKES A TOKEN , RETURNS AN OPERATOR
    IF I>DOT_OP DO return -1;
    return I;   }
 
-VOID
+void
 PRINTEXP(LIST E, WORD N)    // N IS THE PRIORITY LEVEL
 {  TEST E==NIL
    THEN WRITES("[]"); OR
@@ -197,7 +197,7 @@ PRINTEXP(LIST E, WORD N)    // N IS THE PRIORITY LEVEL
                 WRCH(')');   }
    }  }  }
 
-static VOID
+static void
 PRINTZF_EXP(LIST X)
 {  LIST Y=X;
    UNTIL TL(Y)==NIL DO Y=TL(Y);
@@ -272,7 +272,7 @@ ROTATE(LIST E)
 
 //DECOMPILER
 
-VOID
+void
 DISPLAY(ATOM ID, BOOL WITHNOS, BOOL DOUBLESPACING)
                 // THE VAL FIELD OF EACH USER DEFINED NAME
                 // CONTAINS - CONS(CONS(NARGS,COMMENT),<LIST OF EQNS>)
@@ -308,11 +308,11 @@ DISPLAY(ATOM ID, BOOL WITHNOS, BOOL DOUBLESPACING)
             EQNS=TL(EQNS);
    }  }  }
 
-static VOID
+static void
 SHCH(WORD CH)
 {  TRUEWRCH(' '); }
 
-VOID
+void
 DISPLAYEQN(ATOM ID, WORD NARGS, LIST EQN)    //EQUATION DECODER
    {  LIST LHS = HD(EQN), CODE = TL(EQN);
       TEST NARGS==0
@@ -328,7 +328,7 @@ DISPLAYEQN(ATOM ID, WORD NARGS, LIST EQN)    //EQUATION DECODER
       NEWLINE();
    }
 
-VOID
+void
 DISPLAYRHS(LIST LHS, WORD NARGS, LIST CODE)
 {  LIST V[100];
    WORD I = NARGS, J; BOOL IF_FLAG = FALSE;
@@ -441,7 +441,7 @@ SUBTRACT(LIST X, LIST Y)  //LIST SUBTRACTION
    return Z; //NOTE THE RESULT IS REVERSED - FOR OUR PURPOSES THIS
 }              //DOES NOT MATTER
 
-VOID
+void
 REMOVELINENO(LIST EQN)
   //CALLED WHENEVER THE DEFINIENDUM IS SUBJECT OF A
   //DISPLAY,REORDER OR (PARTIAL)DELETE COMMAND - HAS THE EFFECT OF
@@ -496,7 +496,7 @@ EQUATION()      //RETURNS A TRIPLE: CONS(SUBJECT,CONS(NARGS,EQN))
    return CONS(SUBJECT,CONS((LIST)NARGS,CONS(LHS,CODE))); // OK
 }  }  }
 
-static VOID
+static void
 EXPR(WORD N)  //N IS THE PRIORITY LEVEL
    {  TEST N<=3 &&(HAVE((TOKEN)'\\') || HAVE((TOKEN)'~'))
       THEN {  PLANT1(LOAD_C,(LIST)NOT_OP);
@@ -535,7 +535,7 @@ EXPR(WORD N)  //N IS THE PRIORITY LEVEL
             OP=MKINFIX(HD(TOKENS));  }
 }  }
 
-static VOID
+static void
 COMBN()
 { SIMPLE();
   WHILE STARTSIMPLE(HD(TOKENS))
@@ -553,7 +553,7 @@ STARTSIMPLE(TOKEN T)
 {  return ISCONS(T) ? (HD(T)==IDENT || HD(T)==(LIST)CONST) :
    T==(TOKEN)'(' || T==(TOKEN)'[' || T==(TOKEN)'{' || T==(TOKEN)'\'';  }
 
-static VOID
+static void
 SIMPLE()
 {  TEST HAVEID()
    THEN COMPILENAME(THE_ID); OR
@@ -606,7 +606,7 @@ SIMPLE()
    OR SYNTAX(); //MISSING identifier|constant|(|[|{
 }
 
-static VOID
+static void
 COMPILENAME(ATOM N)
    {  WORD I=0;
       UNTIL I>ENVP || ENV[I]==(LIST)N
@@ -633,7 +633,7 @@ QUALIFIER()
    OR {  EXPR(0) ; return 1;  }
 }
 
-static VOID
+static void
 PERFORM_ALPHA_CONVERSIONS()
   //ALSO RECOGNISES THE "SUCH THAT" BAR AND CONVERTS IT TO ';'
   //TO DISTINGUISH IT FROM "OR"
@@ -658,7 +658,7 @@ ISGENERATOR(LIST T)
      (HD(T)==(TOKEN)',' && ISID(HD(TL(T))) && ISGENERATOR(TL(TL(T))));
 }
 
-static VOID
+static void
 ALPHA_CONVERT(LIST VAR, LIST P)
    {  LIST T=TOKENS;
       LIST VAR1=CONS((LIST)ALPHA,TL(VAR));
@@ -690,7 +690,7 @@ SKIPCHUNK(LIST P)
    return(P);
 }
 
-static VOID
+static void
 CONV1(LIST T, LIST VAR, LIST VAR1)
 {  IF EQUAL(HD(T),VAR) && HD(T)!=VAR DO TL(HD(T))=VAR1;  }
 
@@ -732,7 +732,7 @@ PATTERN()
    DO P=CONS((LIST)COLON_OP,CONS(P,PATTERN()));
    return P;  }
 
-static VOID
+static void
 COMPILELHS(LIST LHS, WORD NARGS)
    {  WORD I;
       ENVP=NARGS-1;
@@ -742,7 +742,7 @@ COMPILELHS(LIST LHS, WORD NARGS)
       for (I=0; I<=NARGS-1; I++) COMPILEFORMAL(ENV[I],I);
    }
 
-static VOID
+static void
 COMPILEFORMAL(LIST X, WORD I)
 {  TEST ISATOM(X)  //IDENTIFIER
    THEN {  WORD J=0;
@@ -770,18 +770,18 @@ COMPILEFORMAL(LIST X, WORD I)
 // the address of a C function - all are mapped to LIST type.
 
 // APPLY_C IF_C STOP_C
-static VOID
+static void
 PLANT0(INSTRUCTION OP)
    {  CODEV=CONS((LIST)OP, CODEV); }
 
 // everything else
-static VOID
+static void
 PLANT1(INSTRUCTION OP, LIST A)
    { CODEV=CONS((LIST)OP, CODEV);
      CODEV=CONS(A, CODEV); }
 
 // MATCH_C MATCHARG_C
-static VOID
+static void
 PLANT2(INSTRUCTION OP, LIST A, LIST B)
    { CODEV=CONS((LIST)OP, CODEV);
      CODEV=CONS(A, CODEV);
@@ -796,8 +796,8 @@ COLLECTCODE()          //FLUSHES THE CODE BUFFER
 
 // Mark elements in CODEV and ENV for preservation by the GC.
 // This routine should be called by your BASES() function.
-VOID
-COMPILER_BASES(VOID (*F)(LIST *))
+void
+COMPILER_BASES(void (*F)(LIST *))
 {  WORD I;
 
    F(&CODEV);

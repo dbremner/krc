@@ -437,7 +437,7 @@ HASH(char *S, int LEN)  // TAKES A NAME AND RETURNS A VALUE IN 0..127
 
    return H&0x7F; }
 
-VOID
+void
 BUFCH(WORD CH)
    {  IF BUFP>=ATOMSIZE
       DO { SPACE_ERROR("Atom too big"); }

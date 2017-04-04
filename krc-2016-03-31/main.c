@@ -23,53 +23,53 @@
 #include <signal.h>
 
 // Local function declarations
-static VOID DIRCOM();
-static VOID DISPLAYCOM();
-static VOID QUITCOM();
-static VOID OBJECTCOM();
-static VOID RESETCOM();
-static VOID GCCOM();
-static VOID COUNTCOM();
-static VOID SAVECOM();
-static VOID FILECOM();
-static VOID GETCOM();
-static VOID LISTCOM();
-static VOID NAMESCOM();
-static VOID LIBCOM();
-static VOID CLEARCOM();
-static VOID OPENLIBCOM();
-static VOID HELPCOM();
-static VOID RENAMECOM();
-static VOID ABORDERCOM();
-static VOID REORDERCOM();
-static VOID DELETECOM();
+static void DIRCOM();
+static void DISPLAYCOM();
+static void QUITCOM();
+static void OBJECTCOM();
+static void RESETCOM();
+static void GCCOM();
+static void COUNTCOM();
+static void SAVECOM();
+static void FILECOM();
+static void GETCOM();
+static void LISTCOM();
+static void NAMESCOM();
+static void LIBCOM();
+static void CLEARCOM();
+static void OPENLIBCOM();
+static void HELPCOM();
+static void RENAMECOM();
+static void ABORDERCOM();
+static void REORDERCOM();
+static void DELETECOM();
 static BOOL STARTDISPLAYCOM();
 
-static VOID PARSELINE(char *line);
-static VOID INITIALISE();
-static VOID ENTERARGV(int USERARGC, LIST USERARGV);
-static VOID SETUP_COMMANDS();
-static VOID COMMAND();
-static VOID DISPLAYALL(BOOL DOUBLESPACING);
+static void PARSELINE(char *line);
+static void INITIALISE();
+static void ENTERARGV(int USERARGC, LIST USERARGV);
+static void SETUP_COMMANDS();
+static void COMMAND();
+static void DISPLAYALL(BOOL DOUBLESPACING);
 static BOOL MAKESURE();
-static VOID FILENAME();
+static void FILENAME();
 static BOOL OKFILE(FILE *STR, char *FILENAME);
-static VOID CHECK_HITS();
+static void CHECK_HITS();
 static BOOL GETFILE(char *FILENAME);
-static VOID FIND_UNDEFS();
+static void FIND_UNDEFS();
 static BOOL ISDEFINED(ATOM X);
-static VOID SCRIPTLIST(LIST S);
+static void SCRIPTLIST(LIST S);
 static LIST SUBST(LIST Z,LIST A);
-static VOID NEWEQUATION();
-static VOID CLEARMEMORY();
-static VOID COMMENT();
-static VOID EVALUATION();
+static void NEWEQUATION();
+static void CLEARMEMORY();
+static void COMMENT();
+static void EVALUATION();
 static LIST SORT(LIST X);
-static VOID SCRIPTREORDER();
+static void SCRIPTREORDER();
 static WORD NO_OF_EQNS(ATOM A);
 static BOOL PROTECTED(ATOM A);
 static BOOL PRIMITIVE(ATOM A);
-static VOID REMOVE(ATOM A);
+static void REMOVE(ATOM A);
 static LIST EXTRACT(ATOM A, ATOM B);
 
 static LIST COMMANDS=NIL, SCRIPT=NIL, OUTFILES=NIL;	//BASES
@@ -92,14 +92,14 @@ static char *EVALUATE = NULL;	// Expression to execute in batch mode
 
 // INITIALISATION AND STEERING
 
-VOID ESCAPETONEXTCOMMAND(void);
+void ESCAPETONEXTCOMMAND(void);
 
 // Are we ignoring interrupts?
 static BOOL INTERRUPTS_ARE_HELD = FALSE;
 // Was an interrupt delivered while we were ignoring them?
 static BOOL INTERRUPT_OCCURRED = FALSE;
 
-static VOID
+static void
 CATCHINTERRUPT(int signum)
 {  IF INTERRUPTS_ARE_HELD DO {
       INTERRUPT_OCCURRED = signum;	// Can't be 0
@@ -116,10 +116,10 @@ CATCHINTERRUPT(int signum)
    ESCAPETONEXTCOMMAND();  }
 
 
-VOID
+void
 HOLD_INTERRUPTS() {  INTERRUPTS_ARE_HELD = TRUE;  }
 
-VOID
+void
 RELEASE_INTERRUPTS()
    {  INTERRUPTS_ARE_HELD = FALSE;
       IF INTERRUPT_OCCURRED DO {
@@ -133,7 +133,7 @@ RELEASE_INTERRUPTS()
 // Where to jump back to on runtime errors or keyboard interrupts
 static jmp_buf nextcommand;
 
-VOID ESCAPETONEXTCOMMAND()
+void ESCAPETONEXTCOMMAND()
    {  _WRCH=TRUEWRCH;
       IF INPUT()!=SYSIN DO {  ENDREAD() ; SELECTINPUT(SYSIN); }
       CLOSECHANNELS();
@@ -151,7 +151,7 @@ VOID ESCAPETONEXTCOMMAND()
 // Buffer for signal handling
 static struct sigaction act;	// All initialised to 0/NULL is fine.
 
-VOID
+void
 GO()
    {  // STACKLIMIT:= @V4 + 30000  //IMPLEMENTATION DEPENDENT,TO TEST FOR RUNAWAY RECURSION
       IF setjmp(nextcommand) == 0 DO
@@ -215,7 +215,7 @@ str_UNRDCH(int c)
 }
 
 // SAME AS READLINE, BUT GETS ITS INPUT FROM A C STRING
-static VOID
+static void
 PARSELINE(char *line)
 {  input_line=line;
    _RDCH=str_RDCH, _UNRDCH=str_UNRDCH;
@@ -233,7 +233,7 @@ static char TITLE[] = "Kent Recursive Calculator 1.0";
 #endif
 //but use krclib in current directory if present, see below
 
-static VOID
+static void
 INITIALISE()
    {  BOOL LOADPRELUDE=TRUE;	// Do we need to read the prelude?
       BOOL OLDLIB=FALSE;        // Use legacy prelude?
@@ -320,7 +320,7 @@ INITIALISE()
 //     LOAD.(QUOTE."one").LOAD.(QUOTE."two").LOAD.(QUOTE."three").
 //     FORMLIST.0x03.STOP.NIL ).
 //   NIL )
-static VOID
+static void
 ENTERARGV(int USERARGC, LIST USERARGV)
 {  
    ATOM A=MKATOM("argv");
@@ -336,7 +336,7 @@ ENTERARGV(int USERARGC, LIST USERARGV)
    ENTERSCRIPT(A);
 }
 
-VOID
+void
 SPACE_ERROR(char *MESSAGE)
 {  _WRCH=TRUEWRCH;
    CLOSECHANNELS();
@@ -350,8 +350,8 @@ SPACE_ERROR(char *MESSAGE)
    OR CLEARMEMORY();  //LET GO OF MEMOS AND TRY TO CARRY ON
 }
 
-VOID
-BASES(VOID (*F)(LIST *)) {
+void
+BASES(void (*F)(LIST *)) {
 extern LIST S;	// In reducer.c
       F(&COMMANDS);
       F(&FILECOMMANDS);
@@ -374,7 +374,7 @@ extern LIST S;	// In reducer.c
       REDUCER_BASES(F);
 }
 
-static VOID
+static void
 SETUP_COMMANDS()
    {
 #define F(S,R) { COMMANDS=CONS(CONS((LIST)MKATOM(S),(LIST)R),COMMANDS); }
@@ -408,7 +408,7 @@ SETUP_COMMANDS()
 #undef F
    }
 
-static VOID
+static void
 DIRCOM()
    {  int status;
       switch (fork()) {
@@ -417,7 +417,7 @@ DIRCOM()
       default: wait(&status);
    }  }
 
-VOID
+void
 CLOSECHANNELS()
    {  IF !EVALUATING && OUTPUT()!=SYSOUT DO ENDWRITE();
       UNTIL OUTFILES==NIL
@@ -495,7 +495,7 @@ FINDCHANNEL(char *F)
 //NULL,
 //};
 //
-//static VOID
+//static void
 //SHOWHELP()
 //{
 //	char **h;
@@ -507,7 +507,7 @@ FINDCHANNEL(char *F)
 #define HELP KRCPAGER LIBDIR "/help/"
 #define BUFLEN 80
 
-static VOID
+static void
 HELPCOM()
 { struct stat buf;
   char strbuf[BUFLEN+1],*topic;
@@ -524,7 +524,7 @@ HELPCOM()
   snprintf(strbuf, sizeof(strbuf), "%s%s", local?HELPLOCAL:HELP, topic);
   r=system(strbuf); }
 
-static VOID
+static void
 COMMAND()
    {
       static char prompt[]="krc> ";
@@ -576,7 +576,7 @@ STARTDISPLAYCOM()
   return R;
 }
 
-static VOID
+static void
 DISPLAYCOM()
 {  TEST HAVEID()
    THEN TEST HAVE(EOL)
@@ -595,7 +595,7 @@ DISPLAYCOM()
    OR SYNTAX();
 }
 
-static VOID
+static void
 DISPLAYALL(BOOL DOUBLESPACING)  // "SCRIPT" IS A LIST OF ALL USER DEFINED
                                 // NAMES IN ALPHABETICAL ORDER
    {  LIST P=SCRIPT;
@@ -614,7 +614,7 @@ PRIMITIVE(ATOM A)
 { IF TL(VAL(A))==NIL DO return FALSE; //A has comment but no eqns
   return HD(TL(HD(TL(VAL(A)))))==(LIST)CALL_C; }
 
-static VOID
+static void
 QUITCOM()
    {  IF TOKENS!=NIL DO CHECK(EOL);
       IF ERRORFLAG DO return;
@@ -635,24 +635,24 @@ MAKESURE()
    return FALSE;
 }  }
 
-static VOID
+static void
 OBJECTCOM()
 {  ATOBJECT=TRUE;  }
 
-static VOID
+static void
 RESETCOM()
 {  ATOBJECT=FALSE,ATCOUNT=FALSE,ATGC=FALSE;  }
 
-static VOID
+static void
 GCCOM()
    {  ATGC=TRUE;
       FORCE_GC();  }
 
-static VOID
+static void
 COUNTCOM()
 {  ATCOUNT=TRUE;  }
 
-static VOID
+static void
 SAVECOM()
    {  FILENAME();
       IF ERRORFLAG DO return;
@@ -676,7 +676,7 @@ SAVECOM()
 		  break;
 }  }  }  }
 
-static VOID
+static void
 FILENAME()
 {  TEST HAVE(EOL)
    THEN TEST LASTFILE==0
@@ -689,7 +689,7 @@ FILENAME()
             SYNTAX(); }
 }
 
-static VOID
+static void
 FILECOM()
 {  TEST HAVE(EOL)
    THEN TEST LASTFILE==0
@@ -704,7 +704,7 @@ OKFILE(FILE *STR, char *FILENAME)
    WRITEF("Cannot open \"%s\"\n",FILENAME);
    return FALSE; }
 
-static VOID
+static void
 GETCOM()
    {  BOOL CLEAN = SCRIPT==NIL;
       FILENAME();
@@ -715,7 +715,7 @@ GETCOM()
       SCRIPT=APPEND(HOLDSCRIPT,SCRIPT),SAVED=CLEAN,HOLDSCRIPT=NIL;
    }
 
-static VOID
+static void
 CHECK_HITS()
 {  UNLESS GET_HITS==NIL
    DO {  WRITES("Warning - /get has overwritten or modified:\n");
@@ -751,7 +751,7 @@ GETFILE(char *FILENAME)
       LASTLHS=NIL;
       return TRUE;  }}
 
-static VOID
+static void
 LISTCOM()
    {  FILENAME();
       IF ERRORFLAG DO return;
@@ -766,7 +766,7 @@ LISTCOM()
       SELECTINPUT(SYSIN);
 }  }  }
 
-static VOID
+static void
 NAMESCOM()
    {  CHECK(EOL);
       IF ERRORFLAG DO return;
@@ -775,7 +775,7 @@ NAMESCOM()
       OR  {  SCRIPTLIST(SCRIPT); FIND_UNDEFS();  }
    }
 
-static VOID
+static void
 FIND_UNDEFS()  //SEARCHES THE SCRIPT FOR NAMES USED BUT NOT DEFINED
    {  LIST S=SCRIPT, UNDEFS=NIL;
       UNTIL S==NIL
@@ -798,7 +798,7 @@ static BOOL
 ISDEFINED(ATOM X)
 {  return VAL(X)==NIL||TL(VAL(X))==NIL ? FALSE : TRUE;  }
 
-static VOID
+static void
 LIBCOM()
    {  CHECK(EOL);
       IF ERRORFLAG DO return;
@@ -806,13 +806,13 @@ LIBCOM()
       THEN WRITES("library = empty\n");
       OR SCRIPTLIST(LIBSCRIPT);  }
  
-static VOID
+static void
 CLEARCOM()
    {  CHECK(EOL);
       IF ERRORFLAG DO return;
       CLEARMEMORY();  }
 
-static VOID
+static void
 SCRIPTLIST(LIST S)
    {  WORD COL=0,I=0;
 #define LINEWIDTH 68  //THE MINIMUM OF VARIOUS DEVICES
@@ -829,7 +829,7 @@ SCRIPTLIST(LIST S)
       WRITEF(" (%" W ")\n",I);
    }
 
-static VOID
+static void
 OPENLIBCOM()
    {  CHECK(EOL);
       IF ERRORFLAG DO return;
@@ -838,7 +838,7 @@ OPENLIBCOM()
       LIBSCRIPT=NIL;
    }
 
-static VOID
+static void
 RENAMECOM()
    {  LIST X=NIL,Y=NIL,Z=NIL;
       WHILE HAVEID() DO X=CONS((LIST)THE_ID,X);
@@ -912,7 +912,7 @@ SUBST(LIST Z,LIST A)
          Z=TL(Z); }
    return A;  }
 
-static VOID
+static void
 NEWEQUATION()
    {  WORD EQNO = -1;
       IF HAVENUM()
@@ -981,7 +981,7 @@ NEWEQUATION()
       SAVED=FALSE;
    }  }  }
 
-static VOID
+static void
 CLEARMEMORY() //CALLED WHENEVER EQNS ARE DESTROYED,REORDERED OR
                   //INSERTED (OTHER THAN AT THE END OF A DEFINITION)
 {  UNTIL MEMORIES==NIL //MEMORIES HOLDS A LIST OF ALL VARS WHOSE MEMO
@@ -989,7 +989,7 @@ CLEARMEMORY() //CALLED WHENEVER EQNS ARE DESTROYED,REORDERED OR
          UNLESS X==NIL DO HD(HD(TL(X)))=0; //UNSET MEMO FIELD
          MEMORIES=TL(MEMORIES);  }  }
 
-VOID
+void
 ENTERSCRIPT(ATOM A)    //ENTERS "A" IN THE SCRIPT
 {  TEST SCRIPT==NIL
    THEN SCRIPT=CONS((LIST)A,NIL);
@@ -999,7 +999,7 @@ ENTERSCRIPT(ATOM A)    //ENTERS "A" IN THE SCRIPT
          TL(S) = CONS((LIST)A,NIL);  }
 }
 
-static VOID
+static void
 COMMENT()
    {  ATOM SUBJECT=(ATOM)TL(HD(TOKENS));
       LIST COMMENT=HD(TL(TOKENS));
@@ -1013,7 +1013,7 @@ COMMENT()
       SAVED=FALSE;
    }
 
-static VOID
+static void
 EVALUATION()
    {  LIST CODE=EXP();
       WORD CH=(WORD)HD(TOKENS);
@@ -1034,7 +1034,7 @@ EVALUATION()
       IF ATCOUNT DO OUTSTATS();
    }
 
-static VOID
+static void
 ABORDERCOM()
 {  SCRIPT=SORT(SCRIPT),SAVED=FALSE;  }
 
@@ -1053,7 +1053,7 @@ SORT(LIST X)
       return REVERSE(X);  }
 }
 
-static VOID
+static void
 REORDERCOM()
 {  TEST ISID(HD(TOKENS)) && (ISID(HD(TL(TOKENS))) || HD(TL(TOKENS))==(LIST)DOTDOT_SY)
    THEN SCRIPTREORDER(); OR
@@ -1099,7 +1099,7 @@ REORDERCOM()
    OR SYNTAX();
 }
 
-static VOID
+static void
 SCRIPTREORDER()
    {  LIST R=NIL;
       WHILE HAVEID()
@@ -1138,7 +1138,7 @@ PROTECTED(ATOM A)
    WRITEF("\"%s\" is predefined and cannot be altered\n",PRINTNAME(A));
    return TRUE;  }
 
-static VOID
+static void
 REMOVE(ATOM A)   // REMOVES "A" FROM THE SCRIPT
    {  SCRIPT=SUB1(SCRIPT,A);
       VAL(A)=NIL;
@@ -1155,7 +1155,7 @@ EXTRACT(ATOM A, ATOM B)         //RETURNS A SEGMENT OF THE SCRIPT
                       PRINTNAME(A),B==(ATOM)EOL?"":PRINTNAME(B));
    return REVERSE(X);  }
 
-static VOID
+static void
 DELETECOM()
    {  LIST DLIST = NIL;
       WHILE HAVEID()
