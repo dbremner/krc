@@ -64,7 +64,7 @@ READLINE()
       IF T==(TOKEN)EOL || T==(TOKEN)ENDSTREAMCH DO return;
       WRITES("Closing quote missing - line ignored\n");
       ERRORFLAG=TRUE; return;
-   } REPEAT;
+   } while(1);;
 }
 
 #define NOTCH(CH) (CH=='\\'||CH=='~' && LEGACY)
@@ -187,7 +187,7 @@ READTOKEN(void)
          do{ CH=RDCH();
              IF CH=='\n' DO return EOL;
              IF CH==EOF  DO return ENDSTREAMCH;
-         } REPEAT;
+         } while(1);;
       }
    IF CH=='<' && '-'==CH2 DO return BACKARROW_SY;
    IF CH2=='='
@@ -228,7 +228,7 @@ READ_DECIMALS(void)         //RETURNS VALUE IN HUNDREDTHS
             return N;  }
       N=N+F*D; //NOTE THAT DECIMAL PLACES AFTER THE 2ND WILL HAVE NO
       F=F/10;  //EFFECT ON THE ANSWER
-   } REPEAT;
+   } while(1);;
 }
 #endif
 

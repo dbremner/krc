@@ -182,7 +182,7 @@ PRINTVAL(LIST E, BOOL FORMAT)
                          THEN { IF FORMAT DO WRCH(','); }
                          OR break;
                          E=TL(E);
-                      } REPEAT;
+                      } while(1);;
                       TEST E==NIL
                       THEN { IF FORMAT DO WRCH(']'); }
                       OR BADEXP(CONS((LIST)COLON_OP,CONS((LIST)ETC,E)));
@@ -255,7 +255,7 @@ EQUALVAL(LIST A,LIST B) //UNPREDICTABLE RESULTS IF A,B BOTH FUNCTIONS
    A=TL(A),B=TL(B);
    UNLESS EQUALVAL(HD(A),HD(B)) DO return FALSE;
    A=TL(A),B=TL(B);
-} REPEAT }
+} while(1); }
 
 static void
 BADEXP(LIST E) //CALLED FOR ALL EVALUATION ERRORS
@@ -385,7 +385,7 @@ OBEY(LIST EQNS,LIST E) //TRANSFORM A PIECE OF GRAPH, E, IN ACCORDANCE
             case CALL_C: (*(void (*)())CODE)(E);
                          return;
             default: WRITEF("IMPOSSIBLE INSTRUCTION <%p> IN \"OBEY\"\n", H);
-         }  }  REPEAT  //END OF DECODE LOOP
+         }  }  while(1);  //END OF DECODE LOOP
 BREAK_DECODE_LOOP:
          EQNS=TL(EQNS);
          ARGP=HOLDARG;
@@ -833,7 +833,7 @@ REDUCE(LIST E)
             HD(S)=(LIST)INDIR,TL(S)=E,S=HOLD;  }
          } } //END OF OPERATORS
       REDS=REDS+1;
-   } REPEAT //END OF MAIN LOOP
+   } while(1); //END OF MAIN LOOP
 BREAK_MAIN_LOOP:
    UNTIL S==(LIST)ENDOFSTACK   //UNREVERSE REVERSED POINTERS
    DO {  LIST HOLD=HD(S);

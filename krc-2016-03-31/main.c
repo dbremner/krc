@@ -745,7 +745,7 @@ GETFILE(char *FILENAME)
          IF ERRORFLAG
          DO { SYNTAX_ERROR("**syntax error in file ");
               WRITEF("%s at line %d\n",FILENAME,line); }
-      } REPEAT
+      } while(1);
       ENDREAD();
       SELECTINPUT(SYSIN);
       LASTLHS=NIL;
@@ -954,7 +954,7 @@ NEWEQUATION()
                  DO {  TL(EQNS)=CONS(EQN,NIL);
                        break;  }
                  EQNS=TL(EQNS);
-              } REPEAT
+              } while(1);
            } 
       OR {  LIST EQNS = TL(VAL(SUBJECT));  //NUMBERED EQN
             WORD N = 0;
@@ -976,7 +976,7 @@ NEWEQUATION()
                DO {  TL(EQNS)=CONS(EQN,NIL);
                      break;  }
                EQNS=TL(EQNS);
-            } REPEAT
+            } while(1);
          } 
       SAVED=FALSE;
    }  }  }

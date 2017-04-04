@@ -401,7 +401,7 @@ DISPLAYRHS(LIST LHS, WORD NARGS, LIST CODE)
          default: WRITES("IMPOSSIBLE INSTRUCTION IN \"DISPLAYRHS\"\n");
       } //END OF SWITCH
       CODE=TL(CODE);
-   } REPEAT;
+   } while(1);;
 }
 
 LIST
