@@ -118,30 +118,30 @@ MKINFIX(TOKEN T)// TAKES A TOKEN , RETURNS AN OPERATOR
 
 void
 PRINTEXP(LIST E, WORD N)    // N IS THE PRIORITY LEVEL
-{  TEST E==NIL
+{  if ( E==NIL
    THEN WRITES("[]"); OR
-   TEST ISATOM(E)
+   if ( ISATOM(E)
    THEN WRITES(PRINTNAME((ATOM)E)); OR
-   TEST ISNUM(E)
+   if ( ISNUM(E)
    THEN { WORD X=GETNUM(E);
-          TEST X<0 && N>5 
+          if ( X<0 && N>5 
           THEN { WRCH('('); WRITEN(X); WRCH(')'); }
           OR WRITEN(X); }
    OR {  UNLESS ISCONS(E)
-         DO {  TEST E==(LIST)NOT_OP THEN WRITES("'\\'"); OR
-               TEST E==(LIST)LENGTH_OP THEN WRITES("'#'");
+         DO {  if ( E==(LIST)NOT_OP THEN WRITES("'\\'"); OR
+               if ( E==(LIST)LENGTH_OP THEN WRITES("'#'");
                OR WRITEF("<internal value:%p>",E);
                return; }
       {  LIST OP=HD(E);		// Maybe could be OPERATOR
-         TEST !ISOP(OP) && N<=7
+         if ( !ISOP(OP) && N<=7
          THEN {  PRINTEXP(OP,7);
                  WRCH(' ');
                  PRINTEXP(TL(E),8);  }  OR
-         TEST OP==(LIST)QUOTE
+         if ( OP==(LIST)QUOTE
          THEN { PRINTATOM((ATOM)TL(E),TRUE); } OR
-         TEST OP==(LIST)INDIR || OP==(LIST)ALPHA
+         if ( OP==(LIST)INDIR || OP==(LIST)ALPHA
          THEN PRINTEXP(TL(E),N); OR
-         TEST OP==(LIST)DOTDOT_OP || OP==(LIST)COMMADOTDOT_OP
+         if ( OP==(LIST)DOTDOT_OP || OP==(LIST)COMMADOTDOT_OP
          THEN {  WRCH('[');
                  E=TL(E);
                  PRINTEXP(HD(E),0);
@@ -152,33 +152,33 @@ PRINTEXP(LIST E, WORD N)    // N IS THE PRIORITY LEVEL
                  WRITES("..");
                  UNLESS TL(E)==INFINITY DO PRINTEXP(TL(E),0);
                  WRCH(']');  } OR
-         TEST OP==(LIST)ZF_OP
+         if ( OP==(LIST)ZF_OP
          THEN {  WRCH('{');
                  PRINTZF_EXP(TL(E));
                  WRCH('}');  } OR
-         TEST OP==(LIST)NOT_OP && N<=3
+         if ( OP==(LIST)NOT_OP && N<=3
          THEN {  WRCH('\\');
                  PRINTEXP(TL(E),3); } OR
-         TEST OP==(LIST)NEG_OP && N<=5
+         if ( OP==(LIST)NEG_OP && N<=5
          THEN {  WRCH('-');
                  PRINTEXP(TL(E),5);  } OR
-         TEST OP==(LIST)LENGTH_OP && N<=7
+         if ( OP==(LIST)LENGTH_OP && N<=7
          THEN {  WRCH('#');
                  PRINTEXP(TL(E),7);  } OR
-         TEST OP==(LIST)QUOTE_OP
+         if ( OP==(LIST)QUOTE_OP
          THEN {  WRCH('\'');
-		 TEST TL(E)==(LIST)LENGTH_OP THEN WRCH('#'); OR
-		 TEST TL(E)==(LIST)NOT_OP THEN WRCH('\\'); OR
+		 if ( TL(E)==(LIST)LENGTH_OP THEN WRCH('#'); OR
+		 if ( TL(E)==(LIST)NOT_OP THEN WRCH('\\'); OR
 		 WRITETOKEN(INFIXNAMEVEC[(WORD)TL(E)]);
 		 WRCH('\''); }  OR
-         TEST ISLISTEXP(E)
+         if ( ISLISTEXP(E)
          THEN {  WRCH('[');
                  UNTIL E==NIL
                  DO {  PRINTEXP(HD(TL(E)),0);
                        UNLESS TL(TL(E))==NIL DO WRCH(',');
                        E=TL(TL(E));  }
                  WRCH(']');  } OR
-         TEST OP==(LIST)AND_OP && N<=3 && ROTATE(E) && ISRELATION(HD(TL(E)))
+         if ( OP==(LIST)AND_OP && N<=3 && ROTATE(E) && ISRELATION(HD(TL(E)))
 	      && ISRELATION_BEGINNING(TL(TL(HD(TL(E)))),TL(TL(E)))
          THEN {  //CONTINUED RELATIONS
                  PRINTEXP(HD(TL(HD(TL(E)))),4);
@@ -186,7 +186,7 @@ PRINTEXP(LIST E, WORD N)    // N IS THE PRIORITY LEVEL
                  WRITETOKEN(INFIXNAMEVEC[(WORD)HD(HD(TL(E)))]);
                  WRCH(' ');
                  PRINTEXP(TL(TL(E)),2);  } OR
-         TEST ISINFIX(OP) && INFIXPRIOVEC[(WORD)OP]>=N
+         if ( ISINFIX(OP) && INFIXPRIOVEC[(WORD)OP]>=N
          THEN {  PRINTEXP(HD(TL(E)),LEFTPREC((OPERATOR)OP));
                  UNLESS OP==(LIST)COLON_OP DO WRCH(' '); //DOT.OP should be spaced, DT 2015
                  WRITETOKEN(INFIXNAMEVEC[(WORD)OP]);
@@ -203,10 +203,10 @@ PRINTZF_EXP(LIST X)
    UNTIL TL(Y)==NIL DO Y=TL(Y);
    PRINTEXP(HD(Y),0);  //BODY
 // PRINT "SUCH THAT" AS BAR IF A GENERATOR DIRECTLY FOLLOWS
-   TEST ISCONS(HD(X)) && HD(HD(X))==(LIST)GENERATOR THEN WRCH('|'); OR WRCH(';');
+   if ( ISCONS(HD(X)) && HD(HD(X))==(LIST)GENERATOR THEN WRCH('|'); OR WRCH(';');
    UNTIL TL(X)==NIL
    DO {  LIST QUALIFIER=HD(X);
-         TEST ISCONS(QUALIFIER) && HD(QUALIFIER)==(LIST)GENERATOR
+         if ( ISCONS(QUALIFIER) && HD(QUALIFIER)==(LIST)GENERATOR
          THEN {  PRINTEXP(HD(TL(QUALIFIER)),0);
                  WHILE ISCONS(TL(X)) && //DEALS WITH REPEATED GENERATORS
 #ifdef INSTRUMENT_KRC_GC
@@ -299,7 +299,7 @@ DISPLAY(ATOM ID, BOOL WITHNOS, BOOL DOUBLESPACING)
       IF COMMENT!=NIL && N==1 && HD(TL(HD(EQNS)))==(LIST)CALL_C 
 	 DO return;
       for (I=1; I<=N; I++)
-         {  TEST WITHNOS && (N>1 || COMMENT!=NIL)
+         {  if ( WITHNOS && (N>1 || COMMENT!=NIL)
             THEN WRITEF("%2" W ") ",I);
             OR WRITES("    ");
             REMOVELINENO(HD(EQNS));
@@ -315,15 +315,15 @@ SHCH(WORD CH)
 void
 DISPLAYEQN(ATOM ID, WORD NARGS, LIST EQN)    //EQUATION DECODER
    {  LIST LHS = HD(EQN), CODE = TL(EQN);
-      TEST NARGS==0
+      if ( NARGS==0
       THEN {  WRITES(PRINTNAME(ID)); LASTLHS=(LIST)ID;  }
-      OR {  TEST EQUAL(LHS,LASTLHS)
+      OR {  if ( EQUAL(LHS,LASTLHS)
             THEN _WRCH=SHCH;
             OR LASTLHS=LHS;
             PRINTEXP(LHS,0);
             _WRCH=TRUEWRCH;  }
       WRITES(" = ");
-      TEST HD(CODE)==(LIST)CALL_C THEN WRITES("<primitive function>");
+      if ( HD(CODE)==(LIST)CALL_C THEN WRITES("<primitive function>");
       OR DISPLAYRHS(LHS,NARGS,CODE);
       NEWLINE();
    }
@@ -414,7 +414,7 @@ PROFILE(LIST EQN) //EXTRACTS THAT PART OF THE CODE WHICH
    WHILE PARMY(HD(C)) DO C=REST(C);
 {  LIST HOLD=C;
    UNTIL HD(C)==(LIST)IF_C||HD(C)==(LIST)STOP_C DO C=REST(C);
-   TEST HD(C)==(LIST)IF_C
+   if ( HD(C)==(LIST)IF_C
    THEN return SUBTRACT(CODE,C);
    OR return SUBTRACT(CODE,HOLD);
 }  }  }
@@ -465,13 +465,13 @@ EQUATION()      //RETURNS A TRIPLE: CONS(SUBJECT,CONS(NARGS,EQN))
 {  LIST SUBJECT = 0, LHS = 0;
    WORD NARGS = 0;
    INIT_CODEV();
-   TEST HAVEID()
+   if ( HAVEID()
    THEN {  SUBJECT=(LIST)THE_ID,LHS=(LIST)THE_ID;
            WHILE STARTFORMAL(HD(TOKENS))
            DO {  LHS=CONS(LHS,FORMAL());
                  NARGS=NARGS+1;  }
         } OR
-   TEST HD(TOKENS)==(LIST)'=' && LASTLHS!=NIL
+   if ( HD(TOKENS)==(LIST)'=' && LASTLHS!=NIL
    THEN {  SUBJECT=LASTLHS,LHS=LASTLHS;
            WHILE ISCONS(SUBJECT)
            DO SUBJECT=HD(SUBJECT),NARGS=NARGS+1;
@@ -484,7 +484,7 @@ EQUATION()      //RETURNS A TRIPLE: CONS(SUBJECT,CONS(NARGS,EQN))
    EXPR(0);
    PLANT0(STOP_C);
 {  LIST EXPCODE=COLLECTCODE();
-   TEST HAVE((TOKEN)',') //CHANGE FROM EMAS/KRC TO ALLOW GUARDED SIMPLE DEF
+   if ( HAVE((TOKEN)',') //CHANGE FROM EMAS/KRC TO ALLOW GUARDED SIMPLE DEF
    THEN {  EXPR(0);
            PLANT0(IF_C);
            CODE=APPEND(CODE,APPEND(COLLECTCODE(),EXPCODE));  }
@@ -498,20 +498,20 @@ EQUATION()      //RETURNS A TRIPLE: CONS(SUBJECT,CONS(NARGS,EQN))
 
 static void
 EXPR(WORD N)  //N IS THE PRIORITY LEVEL
-   {  TEST N<=3 &&(HAVE((TOKEN)'\\') || HAVE((TOKEN)'~'))
+   {  if ( N<=3 &&(HAVE((TOKEN)'\\') || HAVE((TOKEN)'~'))
       THEN {  PLANT1(LOAD_C,(LIST)NOT_OP);
               EXPR(3);
               PLANT0(APPLY_C);  } OR
-      TEST N<=5 && HAVE((TOKEN)'+') THEN EXPR(5); OR
-      TEST N<=5 && HAVE((TOKEN)'-')
+      if ( N<=5 && HAVE((TOKEN)'+') THEN EXPR(5); OR
+      if ( N<=5 && HAVE((TOKEN)'-')
       THEN {  PLANT1(LOAD_C,(LIST)NEG_OP);
               EXPR(5);
               PLANT0(APPLY_C);  } OR
-      TEST HAVE((TOKEN)'#')
+      if ( HAVE((TOKEN)'#')
       THEN {  PLANT1(LOAD_C,(LIST)LENGTH_OP);
               COMBN();
               PLANT0(APPLY_C);  } OR
-      TEST STARTSIMPLE(HD(TOKENS))
+      if ( STARTSIMPLE(HD(TOKENS))
       THEN COMBN();
       OR { SYNTAX(); return; }
    {  OPERATOR OP=MKINFIX(HD(TOKENS));
@@ -555,22 +555,22 @@ STARTSIMPLE(TOKEN T)
 
 static void
 SIMPLE()
-{  TEST HAVEID()
+{  if ( HAVEID()
    THEN COMPILENAME(THE_ID); OR
-   TEST HAVECONST()
+   if ( HAVECONST()
    THEN PLANT1(LOAD_C,(LIST)INTERNALISE(THE_CONST)); OR
-   TEST HAVE((TOKEN)'(')
+   if ( HAVE((TOKEN)'(')
    THEN {  EXPR(0); CHECK((TOKEN)')');  } OR
-   TEST HAVE((TOKEN)'[')
-   THEN TEST HAVE((TOKEN)']')
+   if ( HAVE((TOKEN)'[')
+   THEN if ( HAVE((TOKEN)']')
         THEN PLANT1(LOAD_C,NIL);
         OR {  WORD N=1;
               EXPR(0);
               IF HAVE((TOKEN)',')
               DO {  EXPR(0);
                     N=N+1;  }
-              TEST HAVE(DOTDOT_SY)
-              THEN {  TEST HD(TOKENS)==(TOKEN)']'
+              if ( HAVE(DOTDOT_SY)
+              THEN {  if ( HD(TOKENS)==(TOKEN)']'
                       THEN PLANT1(LOAD_C,INFINITY);
                       OR EXPR(0);
                       IF N==2 DO PLANT0(APPLY_C);
@@ -581,23 +581,23 @@ SIMPLE()
                           N=N+1;  }
                     PLANT1(FORMLIST_C,(LIST)N);  } // OK
               CHECK((TOKEN)']');  } OR
-    TEST HAVE((TOKEN)'{')  // ZF EXPRESSIONS	BUG?
+    if ( HAVE((TOKEN)'{')  // ZF EXPRESSIONS	BUG?
     THEN {  WORD N = 0;
             LIST HOLD = TOKENS;
             PERFORM_ALPHA_CONVERSIONS();
             EXPR(0);
-            //TEST HD(TOKENS)==BACKARROW_SY  //IMPLICIT ZF BODY
+            //if ( HD(TOKENS)==BACKARROW_SY  //IMPLICIT ZF BODY
                       //NO LONGER LEGAL
             //THEN TOKENS=HOLD; OR
             CHECK((TOKEN)';');
             do N = N + QUALIFIER(); while(HAVE((TOKEN)';'));
             PLANT1(FORMZF_C,(LIST)N); // OK
             CHECK((TOKEN)'}'); }  OR
-   TEST HAVE((TOKEN)'\'') //OPERATOR DENOTATION
-   THEN {  TEST HAVE((TOKEN)'#') THEN PLANT1(LOAD_C,(LIST)LENGTH_OP); OR
-	   TEST HAVE((TOKEN)'\\') || HAVE((TOKEN)'~') THEN PLANT1(LOAD_C,(LIST)NOT_OP);
+   if ( HAVE((TOKEN)'\'') //OPERATOR DENOTATION
+   THEN {  if ( HAVE((TOKEN)'#') THEN PLANT1(LOAD_C,(LIST)LENGTH_OP); OR
+	   if ( HAVE((TOKEN)'\\') || HAVE((TOKEN)'~') THEN PLANT1(LOAD_C,(LIST)NOT_OP);
            OR {  OPERATOR OP=MKINFIX((TOKEN)(HD(TOKENS)));
-                 TEST ISINFIX((LIST)OP) THEN TOKENS=TL(TOKENS);
+                 if ( ISINFIX((LIST)OP) THEN TOKENS=TL(TOKENS);
                  OR SYNTAX(); //MISSING INFIX OR PREFIX OPERATOR
                  PLANT1(LOAD_C,(LIST)QUOTE_OP);
                  PLANT1(LOAD_C,(LIST)OP);
@@ -611,14 +611,14 @@ COMPILENAME(ATOM N)
    {  WORD I=0;
       UNTIL I>ENVP || ENV[I]==(LIST)N
       DO I=I+1;
-      TEST I>ENVP
+      if ( I>ENVP
       THEN PLANT1(LOAD_C,(LIST)N);
       OR PLANT1(LOADARG_C,(LIST)I); //OK
    }
 
 static WORD
 QUALIFIER()
-{  TEST ISGENERATOR(TL(TOKENS))  //WHAT ABOUT MORE GENERAL FORMALS?
+{  if ( ISGENERATOR(TL(TOKENS))  //WHAT ABOUT MORE GENERAL FORMALS?
    THEN {  WORD N=0;
            do {
               HAVEID();
@@ -696,13 +696,13 @@ CONV1(LIST T, LIST VAR, LIST VAR1)
 
 static
 LIST FORMAL()
-{  TEST HAVEID() THEN return (LIST)THE_ID; OR
-   TEST HAVECONST() THEN return INTERNALISE(THE_CONST); OR
-   TEST HAVE((TOKEN)'(')
+{  if ( HAVEID() THEN return (LIST)THE_ID; OR
+   if ( HAVECONST() THEN return INTERNALISE(THE_CONST); OR
+   if ( HAVE((TOKEN)'(')
    THEN {  LIST P=PATTERN();
            CHECK((TOKEN)')');
            return P;  } OR
-   TEST HAVE((TOKEN)'[')
+   if ( HAVE((TOKEN)'[')
    THEN {  LIST PLIST=NIL,P=NIL;
            IF HAVE((TOKEN)']') DO return NIL;
            do PLIST=CONS(PATTERN(),PLIST);
@@ -712,7 +712,7 @@ LIST FORMAL()
            DO {  P=CONS((TOKEN)COLON_OP,CONS(HD(PLIST),P));
                  PLIST=TL(PLIST);  } //NOW THEY ARE IN CORRECT ORDER
            return P;  } OR
-   TEST HAVE((TOKEN)'-') && HAVENUM()
+   if ( HAVE((TOKEN)'-') && HAVENUM()
    THEN {  THE_NUM = -THE_NUM;
            return STONUM(THE_NUM);  }
    OR {  SYNTAX(); //MISSING identifier|constant|(|[
@@ -744,16 +744,16 @@ COMPILELHS(LIST LHS, WORD NARGS)
 
 static void
 COMPILEFORMAL(LIST X, WORD I)
-{  TEST ISATOM(X)  //IDENTIFIER
+{  if ( ISATOM(X)  //IDENTIFIER
    THEN {  WORD J=0;
            UNTIL J>=I || ENV[J]==X
            DO J=J+1;  // IS THIS A REPEATED NAME?
-           TEST J>=I
+           if ( J>=I
            THEN return;   // NO, NO CODE COMPILED
            OR PLANT2(MATCHARG_C,(LIST)I,(LIST)J);  } OR
-   TEST ISNUM(X) || X==NIL || (ISCONS(X) && HD(X)==(LIST)QUOTE)
+   if ( ISNUM(X) || X==NIL || (ISCONS(X) && HD(X)==(LIST)QUOTE)
    THEN PLANT2(MATCH_C,(LIST)I,X); OR
-   TEST ISCONS(X) && HD(X)==(TOKEN)COLON_OP && ISCONS(TL(X))
+   if ( ISCONS(X) && HD(X)==(TOKEN)COLON_OP && ISCONS(TL(X))
    THEN {  PLANT1(MATCHPAIR_C,(LIST)I); // OK
            ENVP=ENVP+2;
         {  WORD A=ENVP-1,B=ENVP;

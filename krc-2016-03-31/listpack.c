@@ -132,7 +132,7 @@ main(int argc, char **argv)
             case 'h': IF ++I>=ARGC || (SPACE=atoi(ARGV[I]))<=0 DO {
                       WRITES("krc: -h What?\n"); FINISH  }
                       break; 
-            case 'l': TEST ++I>=ARGC //doesn't logically belong in listpack
+            case 'l': if ( ++I>=ARGC //doesn't logically belong in listpack
                       THEN { WRITES("krc: -l What?\n"); FINISH  }
                       OR USERLIB=ARGV[I];
                       break; 
@@ -248,7 +248,7 @@ SHOW("bases");
 SHOW("atoms");
          
       // Runtime detection of stack growth direction
-      TEST STACKBASE < STACKEND
+      if ( STACKBASE < STACKEND
       THEN
          // STACK GROW UPWARDS
          for (P=STACKBASE+1; P<STACKEND; P++) {
@@ -490,7 +490,7 @@ LISTPM()
             NEWLINE();  }
       WRITES("Atom buckets:\n");
       for (I=0; I<128; I++)
-         TEST HASHV[I] != 0
+         if ( HASHV[I] != 0
          THEN {  ATOM P=HASHV[I];
                  WRITEF("%d :\t", (int)I);
                  UNTIL P==0
@@ -559,10 +559,10 @@ ELEM(LIST X, WORD N)
 
 void
 PRINTOB(LIST X) //or ATOM
-{  TEST X==NIL    THEN WRITES("NIL"); OR
-   TEST ISATOM(X) THEN WRITEF("\"%s\"",PRINTNAME((ATOM)X)); OR
-   TEST ISNUM(X)  THEN WRITEN(GETNUM(X)); OR
-   TEST ISCONS(X)
+{  if ( X==NIL    THEN WRITES("NIL"); OR
+   if ( ISATOM(X) THEN WRITEF("\"%s\"",PRINTNAME((ATOM)X)); OR
+   if ( ISNUM(X)  THEN WRITEN(GETNUM(X)); OR
+   if ( ISCONS(X)
    THEN {  WRCH('(');
            WHILE ISCONS(X)
            DO {  PRINTOB(HD(X));
@@ -583,10 +583,10 @@ ISOKCONS(LIST P)
    LIST Q;
    IF COLLECTING DO return P;
 
-   TEST CONSBASE<=P && P<CONSLIMIT
+   if ( CONSBASE<=P && P<CONSLIMIT
    THEN
       // (ONLY EVEN ADDRESSES IN LISTSPACE COUNT)
-      TEST ((char *)P - (char *)CONSBASE) % sizeof(struct LIST) == 0
+      if ( ((char *)P - (char *)CONSBASE) % sizeof(struct LIST) == 0
       THEN return P;
       OR { WRITEF("\nHD() or TL() called on ODD address %p\n", P); }
    OR { WRITEF("\nHD() or TL() called on %p not in CONS space\n", P); }

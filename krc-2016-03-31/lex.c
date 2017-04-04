@@ -97,11 +97,11 @@ READTOKEN(void)
    // DOESN'T HAVE "TERMINATOR" WHILE Richards' 2013 BCPL DOESN'T GOBBLE IT.
    // CONCLUSION: DON'T USE READN()
    IF isdigit(CH) || CH=='.' && TOKENS==NIL && PEEKDIGIT()
-   DO {  TEST CH=='.'
+   DO {  if ( CH=='.'
          THEN {  THE_NUM==0;
                  TERMINATOR=='.';  }
          OR {  UNRDCH(CH) ; THE_NUM=READN();  }
-         TEST TOKENS==NIL && TERMINATOR=='.'  //LINE NUMBERS (ONLY) ARE
+         if ( TOKENS==NIL && TERMINATOR=='.'  //LINE NUMBERS (ONLY) ARE
          THEN THE_DECIMALS==READ_DECIMALS();  //ALLOWED A DECIMAL PART
          OR UNRDCH(CH);
          return CONS(CONST,STONUM(THE_NUM)); }
@@ -121,7 +121,7 @@ READTOKEN(void)
    DO {  ATOM A;
          CH=RDCH();
          UNTIL (CH=='"'||CH=='\n'||CH==EOF)
-         DO {  TEST CH=='\\' //add C escape chars, DT 2015
+         DO {  if ( CH=='\\' //add C escape chars, DT 2015
                THEN { CH=RDCH();
                       switch(CH)
                       { case 'a': BUFCH('\a'); break;
@@ -163,14 +163,14 @@ READTOKEN(void)
               return NIL; }
          IF CH==';' DO return NIL;
          UNTIL CH==';' || CH==EOF
-         DO TEST CH=='\n'
+         DO if ( CH=='\n'
             THEN {  C=CONS((LIST)PACKBUFFER(),C);
                     do { COMMENTFLAG++;
                          CH=RDCH(); } while (CH=='\n');
                                     //IGNORE BLANK LINES
                  }
             OR {  BUFCH(CH); CH=RDCH();  }
-         TEST CH==EOF
+         if ( CH==EOF
          THEN { WRITEF("%s :- ...",PRINTNAME((ATOM)SUBJECT)),
 	        WRITES(" missing \";\"\n");
 	        COMMENTFLAG--;
@@ -241,7 +241,7 @@ PEEKALPHA()
 
 void
 WRITETOKEN(TOKEN T)
-{  TEST T<(TOKEN)256 && T>(TOKEN)32 THEN WRCH((WORD)T); OR
+{  if ( T<(TOKEN)256 && T>(TOKEN)32 THEN WRCH((WORD)T); OR
    switch(  (WORD)T )
    {  case (WORD)'\n':   WRITES("newline"); break; 
       case (WORD)PLUSPLUS_SY: WRITES("++"); break; 
@@ -253,13 +253,13 @@ WRITETOKEN(TOKEN T)
       case (WORD)EQ_SY:       WRITES("=="); break;  
       case (WORD)BACKARROW_SY: WRITES("<-"); break; 
       case (WORD)DOTDOT_SY: WRITES(".."); break; 
-      default: TEST !(ISCONS(T) && (HD(T)==IDENT || HD(T)==CONST))
+      default: if ( !(ISCONS(T) && (HD(T)==IDENT || HD(T)==CONST))
 	       THEN WRITEF("<UNKNOWN TOKEN<%p>>",T); OR
-	       TEST HD(T)==IDENT
+	       if ( HD(T)==IDENT
 	       THEN WRITES(PRINTNAME((ATOM)(
 			ISCONS(TL(T)) && HD(TL(T))==(LIST)ALPHA
 				 ? TL(TL(T)) : TL(T)))); OR
-	       TEST ISNUM(TL(T))
+	       if ( ISNUM(TL(T))
 	       THEN WRITEN(GETNUM(TL(T)));
 	       OR WRITEF("\"%s\"",PRINTNAME((ATOM)TL(T)));
 }  }
