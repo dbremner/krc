@@ -180,7 +180,7 @@ GO()
       IF EVALUATE && !SIGNOFF DO {
 	 SIGNOFF=TRUE;  // Quit on errors or interrupts
 	 PARSELINE(EVALUATE);
-	 if ( EXPFLAG THEN EVALUATION(); OR
+	 if ( EXPFLAG ) EVALUATION(); OR
 	   WRITES("-e takes an expression followed by ? or !\n");
 	 IF ERRORFLAG
          DO SYNTAX_ERROR("malformed expression after -e\n");
@@ -209,7 +209,7 @@ static int
 str_UNRDCH(int c)
 {
    if ( input_line==NULL && c=='\n'
-   THEN input_line="\n";
+   ) input_line="\n";
    OR *(--input_line)=c;
    return c;
 }
@@ -247,7 +247,7 @@ INITIALISE()
 
       SETUP_PRIMFNS_ETC();
       for (I=1; I<ARGC; I++) {
-         if ( ARGV[I][0]=='-' THEN
+         if ( ARGV[I][0]=='-' )
             switch( ARGV[I][1] ) {
 	    case 'n': LOADPRELUDE=FALSE;
 		      break; 
@@ -283,15 +283,15 @@ INITIALISE()
 	    IF USERSCRIPT==NULL DO USERSCRIPT=ARGV[I]; //was if (...OR
 	    USERARGV=CONS((LIST)MKATOM(ARGV[I]), USERARGV), USERARGC++;
       }  }
-      if ( EVALUATE THEN ENTERARGV(USERARGC, USERARGV);
+      if ( EVALUATE ) ENTERARGV(USERARGC, USERARGV);
       OR IF USERARGC>1 DO { WRITES("krc: too many arguments\n"); FINISH }
-      if ( LOADPRELUDE THEN
-           if ( USERLIB THEN GETFILE(USERLIB); //-l option was used
+      if ( LOADPRELUDE )
+           if ( USERLIB ) GETFILE(USERLIB); //-l option was used
            OR { struct stat buf;
                 if ( stat("krclib",&buf)==0
-                THEN GETFILE(OLDLIB?"krclib/lib1981":"krclib/prelude");
+                ) GETFILE(OLDLIB?"krclib/lib1981":"krclib/prelude");
                 OR GETFILE(OLDLIB?LIBDIR "/lib1981":LIBDIR "/prelude"); }
-      OR // if ( USERLIB || OLDLIB THEN
+      OR // if ( USERLIB || OLDLIB )
          // { WRITES("krc: invalid combination -n and -l or -L\n"); FINISH } OR
          WRITES("\"PRELUDE\" suppressed\n");
       SKIPCOMMENTS=FALSE;  //effective only for prelude
@@ -341,10 +341,10 @@ SPACE_ERROR(char *MESSAGE)
 {  _WRCH=TRUEWRCH;
    CLOSECHANNELS();
    if ( EVALUATING
-   THEN {  WRITEF("\n**%s**\n**evaluation abandoned**\n",MESSAGE);
+   ) {  WRITEF("\n**%s**\n**evaluation abandoned**\n",MESSAGE);
            ESCAPETONEXTCOMMAND();  } OR
    if ( MEMORIES==NIL
-   THEN
+   )
    {  WRITEF("\n%s - recovery impossible\n", MESSAGE);
       FINISH  }
    OR CLEARMEMORY();  //LET GO OF MEMOS AND TRY TO CARRY ON
@@ -434,7 +434,7 @@ FINDCHANNEL(char *F)
    UNTIL P==NIL || strcmp((char *)HD(HD(P)),F) == 0
    DO P=TL(P);
    if ( P==NIL
-   THEN {  FILE *OUT = FINDOUTPUT(F);
+   ) {  FILE *OUT = FINDOUTPUT(F);
            IF OUT != NULL
            DO OUTFILES=CONS(CONS((LIST)F,(LIST)OUT),OUTFILES);
            return OUT; }
@@ -513,8 +513,8 @@ HELPCOM()
   char strbuf[BUFLEN+1],*topic;
   int local=stat("krclib",&buf)==0,r;
   if ( HAVE(EOL)
-  THEN { if ( local
-         THEN r=system(HELPLOCAL "menu");
+  ) { if ( local
+         ) r=system(HELPLOCAL "menu");
          OR r=system(HELP "menu");
          return; }
   topic = HAVEID()?PRINTNAME(THE_ID):NULL;
@@ -544,26 +544,26 @@ COMMAND()
       SUPPRESSPROMPTS();  // CANCEL PROMPT (IN CASE COMMAND READS DATA)
 #endif
       if ( HAVE((TOKEN)EOF)
-      THEN SIGNOFF=TRUE; OR
+      ) SIGNOFF=TRUE; OR
       if ( HAVE((TOKEN)'/')
-      THEN if ( HAVE(EOL)
-           THEN DISPLAYALL(FALSE); OR
+      ) if ( HAVE(EOL)
+           ) DISPLAYALL(FALSE); OR
            // if ( HAVE((TOKEN)'@') && HAVE(EOL)
-           // THEN LISTPM(); OR  //FOR DEBUGGING THE SYSTEM
+           // ) LISTPM(); OR  //FOR DEBUGGING THE SYSTEM
            {  LIST P=COMMANDS;
               if ( HAVEID()
-              THEN THE_ID=MKATOM(SCASECONV(PRINTNAME(THE_ID)));
+              ) THE_ID=MKATOM(SCASECONV(PRINTNAME(THE_ID)));
                  //ALWAYS ACCEPT COMMANDS IN EITHER CASE
               OR P=NIL;
               UNTIL P==NIL || THE_ID==(ATOM)HD(HD(P)) DO P=TL(P);
               if ( P==NIL
-              THEN //SHOWHELP();
+              ) //SHOWHELP();
                    WRITES("command not recognised\nfor help type /h\n");
               OR ((void (*)())TL(HD(P)))();    // SEE "SETUP_COMMANDS()"
            } OR
-      if ( STARTDISPLAYCOM() THEN DISPLAYCOM(); OR
-      if ( COMMENTFLAG>0 THEN COMMENT(); OR
-      if ( EQNFLAG THEN NEWEQUATION();
+      if ( STARTDISPLAYCOM() ) DISPLAYCOM(); OR
+      if ( COMMENTFLAG>0 ) COMMENT(); OR
+      if ( EQNFLAG ) NEWEQUATION();
       OR EVALUATION();
       IF ERRORFLAG DO SYNTAX_ERROR("**syntax error**\n");
    }
@@ -579,14 +579,14 @@ STARTDISPLAYCOM()
 static void
 DISPLAYCOM()
 {  if ( HAVEID()
-   THEN if ( HAVE(EOL)
-        THEN DISPLAY(THE_ID,TRUE,FALSE); OR
+   ) if ( HAVE(EOL)
+        ) DISPLAY(THE_ID,TRUE,FALSE); OR
         if ( HAVE((TOKEN)DOTDOT_SY)
-        THEN {  ATOM A = THE_ID; LIST X=NIL;
+        ) {  ATOM A = THE_ID; LIST X=NIL;
                 ATOM B = HAVE(EOL) ? (ATOM)EOL :	// BUG?
                         HAVEID() && HAVE(EOL) ? THE_ID :
                         0;
-                if ( B==0 THEN SYNTAX();
+                if ( B==0 ) SYNTAX();
                 OR X=EXTRACT(A,B);
                 UNTIL X==NIL
                 DO {  DISPLAY((ATOM)HD(X),FALSE,FALSE);
@@ -679,11 +679,11 @@ SAVECOM()
 static void
 FILENAME()
 {  if ( HAVE(EOL)
-   THEN if ( LASTFILE==0
-        THEN {  WRITES("(No file set)\n") ; SYNTAX();  }
+   ) if ( LASTFILE==0
+        ) {  WRITES("(No file set)\n") ; SYNTAX();  }
         OR THE_ID=LASTFILE;
    OR if ( HAVEID() && HAVE(EOL)
-      THEN LASTFILE=THE_ID;
+      ) LASTFILE=THE_ID;
       OR {  IF HAVECONST() && HAVE(EOL) && !ISNUM(THE_CONST)
             DO WRITES("(Warning - quotation marks no longer expected around filenames in file commands - DT, Nov 81)\n");
             SYNTAX(); }
@@ -692,8 +692,8 @@ FILENAME()
 static void
 FILECOM()
 {  if ( HAVE(EOL)
-   THEN if ( LASTFILE==0
-        THEN WRITES("No files used\n");
+   ) if ( LASTFILE==0
+        ) WRITES("No files used\n");
         OR WRITEF("File = %s\n",PRINTNAME(LASTFILE));
    OR FILENAME();
 }
@@ -739,7 +739,7 @@ GETFILE(char *FILENAME)
          IF HD(TOKENS)==ENDSTREAMCH
          DO break;
          if ( COMMENTFLAG
-         THEN { line+=(COMMENTFLAG-1);
+         ) { line+=(COMMENTFLAG-1);
                 COMMENT(); }
          OR NEWEQUATION();
          IF ERRORFLAG
@@ -771,7 +771,7 @@ NAMESCOM()
    {  CHECK(EOL);
       IF ERRORFLAG DO return;
       if ( SCRIPT==NIL
-      THEN DISPLAYALL(FALSE);
+      ) DISPLAYALL(FALSE);
       OR  {  SCRIPTLIST(SCRIPT); FIND_UNDEFS();  }
    }
 
@@ -803,7 +803,7 @@ LIBCOM()
    {  CHECK(EOL);
       IF ERRORFLAG DO return;
       if ( LIBSCRIPT==NIL
-      THEN WRITES("library = empty\n");
+      ) WRITES("library = empty\n");
       OR SCRIPTLIST(LIBSCRIPT);  }
  
 static void
@@ -925,27 +925,27 @@ NEWEQUATION()
       LIST EQN=TL(TL(X));
       IF ATOBJECT DO  {  PRINTOB(EQN) ; NEWLINE();  }
       if ( VAL(SUBJECT)==NIL
-      THEN {  VAL(SUBJECT)=CONS(CONS((LIST)NARGS,NIL),CONS(EQN,NIL));
+      ) {  VAL(SUBJECT)=CONS(CONS((LIST)NARGS,NIL),CONS(EQN,NIL));
               ENTERSCRIPT(SUBJECT);  } OR
       if ( PROTECTED(SUBJECT)
-      THEN return;  OR
+      ) return;  OR
       if ( TL(VAL(SUBJECT))==NIL  //SUBJECT CURRENTLY DEFINED ONLY BY A COMMENT
-      THEN {  HD(HD(VAL(SUBJECT)))=(LIST)NARGS;
+      ) {  HD(HD(VAL(SUBJECT)))=(LIST)NARGS;
               TL(VAL(SUBJECT))=CONS(EQN,NIL);  } OR
 //    if ( NARGS==0 //SIMPLE DEF SILENTLY OVERWRITING EXISTING EQNS - REMOVED DT 2015
-//    THEN {  VAL(SUBJECT)=CONS(CONS(0,TL(HD(VAL(SUBJECT)))),CONS(EQN,NIL));
+//    ) {  VAL(SUBJECT)=CONS(CONS(0,TL(HD(VAL(SUBJECT)))),CONS(EQN,NIL));
 //            CLEARMEMORY(); } OR
       if ( NARGS!=(WORD)HD(HD(VAL(SUBJECT)))
-      THEN {  WRITEF("Wrong no of args for \"%s\"\n",PRINTNAME(SUBJECT));
+      ) {  WRITEF("Wrong no of args for \"%s\"\n",PRINTNAME(SUBJECT));
               WRITES("Equation rejected\n");
               return;  } OR
       if ( EQNO==-1  //UNNUMBERED EQN
-      THEN {  LIST EQNS=TL(VAL(SUBJECT));
+      ) {  LIST EQNS=TL(VAL(SUBJECT));
               LIST P=PROFILE(EQN);
               do{IF EQUAL(P,PROFILE(HD(EQNS)))
                  DO {  LIST CODE=TL(HD(EQNS));
                        if ( HD(CODE)==(LIST)LINENO_C //IF OLD EQN HAS LINE NO,
-                       THEN {  TL(TL(CODE))=TL(EQN);  //NEW EQN INHERITS
+                       ) {  TL(TL(CODE))=TL(EQN);  //NEW EQN INHERITS
                                HD(HD(EQNS))=HD(EQN);  }
                        OR HD(EQNS)=EQN;
                        CLEARMEMORY();
@@ -992,7 +992,7 @@ CLEARMEMORY() //CALLED WHENEVER EQNS ARE DESTROYED,REORDERED OR
 void
 ENTERSCRIPT(ATOM A)    //ENTERS "A" IN THE SCRIPT
 {  if ( SCRIPT==NIL
-   THEN SCRIPT=CONS((LIST)A,NIL);
+   ) SCRIPT=CONS((LIST)A,NIL);
    OR {  LIST S=SCRIPT;
          UNTIL TL(S)==NIL
          DO S=TL(S);
@@ -1046,7 +1046,7 @@ SORT(LIST X)
       A=SORT(A),B=SORT(B);
       UNTIL A==NIL||B==NIL  //NOW MERGE THE TWO HALVES BACK TOGETHER
       DO if ( ALFA_LS((ATOM)HD(A),(ATOM)HD(B))
-	 THEN X=CONS(HD(A),X), A=TL(A);
+	 ) X=CONS(HD(A),X), A=TL(A);
 	 OR   X=CONS(HD(B),X), B=TL(B);
       IF A==NIL DO A=B;
       UNTIL A==NIL DO X=CONS(HD(A),X), A=TL(A);
@@ -1056,9 +1056,9 @@ SORT(LIST X)
 static void
 REORDERCOM()
 {  if ( ISID(HD(TOKENS)) && (ISID(HD(TL(TOKENS))) || HD(TL(TOKENS))==(LIST)DOTDOT_SY)
-   THEN SCRIPTREORDER(); OR
+   ) SCRIPTREORDER(); OR
    if ( HAVEID() && HD(TOKENS)!=EOL
-   THEN {  LIST NOS = NIL;
+   ) {  LIST NOS = NIL;
            WORD MAX = NO_OF_EQNS(THE_ID);
            WHILE HAVENUM()
            DO {  WORD A=THE_NUM;
@@ -1104,14 +1104,14 @@ SCRIPTREORDER()
    {  LIST R=NIL;
       WHILE HAVEID()
       DO if ( HAVE(DOTDOT_SY)
-         THEN {  ATOM A=THE_ID, B=0; LIST X=NIL;
-                 if ( HAVEID() THEN B=THE_ID; OR
+         ) {  ATOM A=THE_ID, B=0; LIST X=NIL;
+                 if ( HAVEID() ) B=THE_ID; OR
                  IF HD(TOKENS)==EOL DO B=(ATOM)EOL;
-                 if ( B==0 THEN SYNTAX(); OR X=EXTRACT(A,B);
+                 if ( B==0 ) SYNTAX(); OR X=EXTRACT(A,B);
                  IF X==NIL DO SYNTAX();
                  R=SHUNT(X,R);  }
          OR if ( MEMBER(SCRIPT,(LIST)THE_ID)
-            THEN R=CONS((LIST)THE_ID,R);
+            ) R=CONS((LIST)THE_ID,R);
             OR {  WRITEF("\"%s\" not in script\n",PRINTNAME(THE_ID));
                   SYNTAX();  }
       CHECK(EOL);
@@ -1160,9 +1160,9 @@ DELETECOM()
    {  LIST DLIST = NIL;
       WHILE HAVEID()
       DO if ( HAVE(DOTDOT_SY)
-         THEN {  ATOM A=THE_ID, B=(ATOM)EOL;
+         ) {  ATOM A=THE_ID, B=(ATOM)EOL;
                  if ( HAVEID()
-                 THEN B=THE_ID; OR
+                 ) B=THE_ID; OR
                  UNLESS HD(TOKENS)==EOL DO SYNTAX();
                  DLIST=CONS(CONS((LIST)A,(LIST)B),DLIST);  } OR
          {  WORD MAX = NO_OF_EQNS(THE_ID);
@@ -1182,7 +1182,7 @@ DELETECOM()
    {  WORD DELS = 0;
       IF DLIST==NIL   //DELETE ALL
       DO {
-	 if ( SCRIPT==NIL THEN DISPLAYALL(FALSE); OR
+	 if ( SCRIPT==NIL ) DISPLAYALL(FALSE); OR
          {  UNLESS MAKESURE() DO return;
             UNTIL SCRIPT==NIL
             DO {  DELS=DELS + NO_OF_EQNS((ATOM)HD(SCRIPT));
@@ -1190,7 +1190,7 @@ DELETECOM()
                   SCRIPT=TL(SCRIPT);  }  }  }
       UNTIL DLIST == NIL
       DO if ( ISATOM(TL(HD(DLIST))) || TL(HD(DLIST))==EOL //"NAME..NAME"
-         THEN {  LIST X=EXTRACT((ATOM)HD(HD(DLIST)),(ATOM)TL(HD(DLIST)));
+         ) {  LIST X=EXTRACT((ATOM)HD(HD(DLIST)),(ATOM)TL(HD(DLIST)));
                  DLIST=TL(DLIST);
                  UNTIL X==NIL
                  DO DLIST=CONS(CONS(HD(X),NIL),DLIST), X=TL(X);  } OR
@@ -1203,14 +1203,14 @@ DELETECOM()
                   continue; }
              IF PROTECTED(NAME) DO continue;
             if ( NOS==NIL
-            THEN {  DELS=DELS+NO_OF_EQNS(NAME);
+            ) {  DELS=DELS+NO_OF_EQNS(NAME);
                     REMOVE(NAME);
                     continue;  }
             OR {
 		WORD I;
 		for (I=NO_OF_EQNS(NAME); I>=1; I=I-1)
                   if ( MEMBER(NOS,(LIST)I)
-                  THEN DELS=DELS+1;
+                  ) DELS=DELS+1;
                   OR {  LIST EQN=ELEM(TL(VAL(NAME)),I);
                         REMOVELINENO(EQN);
                         NEW=CONS(EQN,NEW);  }  }

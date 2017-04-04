@@ -163,15 +163,15 @@ void
 PRINTVAL(LIST E, BOOL FORMAT)
    {  E=REDUCE(E);
       if ( E==NIL
-      THEN { IF FORMAT DO WRITES("[]"); } OR
+      ) { IF FORMAT DO WRITES("[]"); } OR
       if ( ISNUM(E)
-      THEN WRITEN(GETNUM(E)); OR
+      ) WRITEN(GETNUM(E)); OR
       if ( ISCONS(E)
-      THEN {  LIST H=HD(E);
+      ) {  LIST H=HD(E);
               if ( H==(LIST)QUOTE
-              THEN PRINTATOM((ATOM)TL(E),FORMAT); OR
+              ) PRINTATOM((ATOM)TL(E),FORMAT); OR
               if ( H==(LIST)COLON_OP
-              THEN {  IF FORMAT DO WRCH('[');
+              ) {  IF FORMAT DO WRCH('[');
                       E=TL(E);
                       do {
 			 PRINTVAL(HD(E),FORMAT);
@@ -179,16 +179,16 @@ PRINTVAL(LIST E, BOOL FORMAT)
                          E=REDUCE(E);
                          UNLESS ISCONS(E) DO break;
                          if ( HD(E)==(LIST)COLON_OP
-                         THEN { IF FORMAT DO WRCH(','); }
+                         ) { IF FORMAT DO WRCH(','); }
                          OR break;
                          E=TL(E);
                       } while(1);;
                       if ( E==NIL
-                      THEN { IF FORMAT DO WRCH(']'); }
+                      ) { IF FORMAT DO WRCH(']'); }
                       OR BADEXP(CONS((LIST)COLON_OP,CONS((LIST)ETC,E)));
                    }  OR
               if ( ISCONS(H) && HD(H)==(LIST)WRITEFN
-              THEN {  TL(H)=REDUCE(TL(H));
+              ) {  TL(H)=REDUCE(TL(H));
                       UNLESS ISCONS(TL(H)) && HD(TL(H))==(LIST)QUOTE
                       DO BADEXP(E);
                    {  char *F=PRINTNAME((ATOM)TL(TL(H)));
@@ -208,7 +208,7 @@ PRINTVAL(LIST E, BOOL FORMAT)
 void 
 PRINTATOM(ATOM A,BOOL FORMAT)
 {  if ( FORMAT
-   THEN 
+   ) 
         { int I; //DT 2015
           WRCH('"');
           for (I=1; I<=LEN(A); I++) SHOWCH(NAME(A)[I]);
@@ -231,7 +231,7 @@ SHOWCH(unsigned char c)
     case '\'': WRCH('\\'); WRCH('\''); break;
     case '\"': WRCH('\\'); WRCH('\"'); break;
     default: if ( iscntrl(c) || c>=127
-             THEN printf("\\%03u",c);
+             ) printf("\\%03u",c);
              OR WRCH(c);
 } }
 
@@ -582,9 +582,9 @@ REDUCE(LIST E)
       DO {  // UNLESS NARGS==0 DO HOLDARG=(LIST *)-1;  //FLAGS AN ERROR
             goto BREAK_MAIN_LOOP;  }
       if ( ISATOM(E)  //USER DEFINED NAME
-      THEN if ( VAL((ATOM)E)==NIL || TL(VAL((ATOM)E))==NIL THEN BADEXP(E); OR  //UNDEFINED NAME
+      ) if ( VAL((ATOM)E)==NIL || TL(VAL((ATOM)E))==NIL ) BADEXP(E); OR  //UNDEFINED NAME
       if ( HD(HD(VAL((ATOM)E)))==0  //VARIABLE
-      THEN {  LIST EQN=HD(TL(VAL((ATOM)E)));
+      ) {  LIST EQN=HD(TL(VAL((ATOM)E)));
               IF HD(EQN)==0 //MEMO NOT SET
               DO {  HD(EQN)=BUILDEXP(TL(EQN));
                     MEMORIES=CONS(E,MEMORIES);  }
@@ -652,20 +652,20 @@ REDUCE(LIST E)
                         {  LIST QUALIFIER=HD(TL(E));
                            LIST REST=TL(TL(E));
                            if ( ISCONS(QUALIFIER)&&HD(QUALIFIER)==(LIST)GENERATOR
-                           THEN
+                           )
                            {  LIST SOURCE=REDUCE(TL(TL(QUALIFIER)));
                               LIST FORMAL=HD(TL(QUALIFIER));
                               TL(TL(QUALIFIER))=SOURCE;
                               if ( SOURCE==NIL
-                              THEN HD(E)=(LIST)INDIR,TL(E)=NIL,E=NIL; OR
+                              ) HD(E)=(LIST)INDIR,TL(E)=NIL,E=NIL; OR
                               if ( ISCONS(SOURCE)&&HD(SOURCE)==(LIST)COLON_OP
-                              THEN HD(E)=CONS((LIST)INTERLEAVEFN,
+                              ) HD(E)=CONS((LIST)INTERLEAVEFN,
 				   CONS((LIST)ZF_OP, SUBSTITUTE(HD(TL(SOURCE)),FORMAL,REST))),
       TL(E)=CONS((LIST)ZF_OP,
 		 CONS(CONS((LIST)GENERATOR,CONS(FORMAL,TL(TL(SOURCE)))),
                       REST));
 
-//                            THEN HD!E,TL!E:=APPEND.OP,
+//                            ) HD!E,TL!E:=APPEND.OP,
 //                                            CONS(
 //            CONS(ZF.OP,SUBSTITUTE(HD!(TL!SOURCE),FORMAL,REST)),
 //    CONS(ZF.OP,CONS(CONS(GENERATOR,CONS(FORMAL,TL!(TL!SOURCE))),REST))
@@ -675,9 +675,9 @@ REDUCE(LIST E)
                                  QUALIFIER=REDUCE(QUALIFIER);
                                  HD(TL(E))=QUALIFIER;
                                  if ( QUALIFIER==TRUTH
-                                 THEN TL(E)=REST; OR
+                                 ) TL(E)=REST; OR
                                  if ( QUALIFIER==FALSITY
-                                 THEN HD(E)=(LIST)INDIR,TL(E)=NIL,E=NIL;
+                                 ) HD(E)=(LIST)INDIR,TL(E)=NIL,E=NIL;
                                  OR BADEXP(CONS((LIST)GUARD,QUALIFIER));  }
                            REDS=REDS+1;
                            continue;;  }  }
@@ -710,31 +710,31 @@ REDUCE(LIST E)
 	    BOOL STRINGS=FALSE;
    	    ATOM SM, SN;  // The values of M and N when STRINGS == TRUE
             if ( (WORD)E>=LENGTH_OP
-            THEN A=REDUCE(TL(S));  //MONADIC
+            ) A=REDUCE(TL(S));  //MONADIC
             OR {  A=REDUCE(HD(TL(S)));  //DIADIC
                   if ( E>=(LIST)GR_OP  //STRICT IN 2ND ARG ?
-                  THEN { //YES
+                  ) { //YES
                          B=REDUCE(E==(LIST)COMMADOTDOT_OP?HD(TL(TL(S))):TL(TL(S)));
                          if ( ISNUM(A) && ISNUM(B)
-                         THEN M=GETNUM(A),N=GETNUM(B); OR
+                         ) M=GETNUM(A),N=GETNUM(B); OR
                          if ( E<=(LIST)LS_OP &&  //RELOPS
                               ISCONS(A) && ISCONS(B)
                               && HD(A)==(LIST)QUOTE && (LIST)QUOTE==HD(B)
-                         THEN STRINGS=TRUE,SM=(ATOM)TL(A),SN=(ATOM)TL(B); OR
+                         ) STRINGS=TRUE,SM=(ATOM)TL(A),SN=(ATOM)TL(B); OR
                          if ( E==(LIST)DOTDOT_OP && ISNUM(A) && B==INFINITY
-                         THEN M=GETNUM(A),N=M;
+                         ) M=GETNUM(A),N=M;
                          OR
    BADEXP(CONS(E,CONS(A,E==(LIST)COMMADOTDOT_OP?CONS(B,TL(TL(TL(S)))):B)));
                        }
                   OR B=TL(TL(S));  //NO
                }
                switch(  (WORD)E )
-               {  case AND_OP: if ( A==FALSITY THEN E=A; OR
-                               if ( A==TRUTH THEN E=B; OR
+               {  case AND_OP: if ( A==FALSITY ) E=A; OR
+                               if ( A==TRUTH ) E=B; OR
                                BADEXP(CONS(E,CONS(A,B)));
 					break; 
-                  case OR_OP:  if ( A==TRUTH THEN E=A; OR
-                               if ( A==FALSITY THEN E=B; OR
+                  case OR_OP:  if ( A==TRUTH ) E=A; OR
+                               if ( A==FALSITY ) E=B; OR
                                BADEXP(CONS(E,CONS(A,B)));
 					break; 
                   case APPEND_OP: IF A==NIL DO { E=B; break;  }
@@ -756,8 +756,8 @@ REDUCE(LIST E)
                                           LIST C=REDUCE(TL(TL(TL(S))));
                                           static WORD P=0;
                                           if ( ISNUM(C)
-                                          THEN P=GETNUM(C); OR
-                                          if ( C==INFINITY THEN P=N1;
+                                          ) P=GETNUM(C); OR
+                                          if ( C==INFINITY ) P=N1;
                                           OR BADEXP(CONS(E,CONS(A,CONS(B,C))));
                                           IF (N1-M1)*(P-M1)<0 DO { E=NIL; break;  }
                                           E=(LIST)COLON_OP;
@@ -766,8 +766,8 @@ REDUCE(LIST E)
                                                      CONS(B,TL(TL(S))));
                                           REDS=REDS+1;
                                           continue;  }
-                  case NOT_OP: if ( A==TRUTH THEN E=FALSITY; OR
-                               if ( A==FALSITY THEN E=TRUTH; OR
+                  case NOT_OP: if ( A==TRUTH ) E=FALSITY; OR
+                               if ( A==FALSITY ) E=TRUTH; OR
                                BADEXP(CONS(E,A));
 			       break; 
                   case NEG_OP: UNLESS ISNUM(A) DO BADEXP(CONS(E,A));
@@ -846,9 +846,9 @@ BREAK_MAIN_LOOP:
 
 static LIST
 SUBSTITUTE(LIST ACTUAL,LIST FORMAL,LIST EXP)
-{    if ( EXP==FORMAL THEN return ACTUAL;
+{    if ( EXP==FORMAL ) return ACTUAL;
      OR if ( !ISCONS(EXP) || HD(EXP)==(LIST)QUOTE || BINDS(FORMAL,HD(EXP))
-     THEN return EXP; OR
+     ) return EXP; OR
      {  LIST H=SUBSTITUTE(ACTUAL,FORMAL,HD(EXP));
         LIST T=SUBSTITUTE(ACTUAL,FORMAL,TL(EXP));
         return H==HD(EXP) && T==TL(EXP) ? EXP : CONS(H,T);  }
