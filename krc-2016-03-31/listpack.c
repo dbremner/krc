@@ -134,7 +134,7 @@ main(int argc, char **argv)
                       break; 
             case 'l': if ( ++I>=ARGC //doesn't logically belong in listpack
                       ) { WRITES("krc: -l What?\n"); FINISH  }
-                      OR USERLIB=ARGV[I];
+                      else USERLIB=ARGV[I];
                       break; 
             case 'd': IF ++I>=ARGC || (DICMAX=atoi(ARGV[I]))<=0 DO {
                       WRITES("krc: -d What?\n"); FINISH  }
@@ -265,7 +265,7 @@ SHOW("atoms");
                }
 	    }
          }
-      OR
+      else
 	 // STACK GROWS DOWNWARDS
          for (P=STACKBASE-1; P>STACKEND; P--) {
             IF CONSBASE<=(LIST)*P && (LIST)*P<CONSLIMIT DO {
@@ -502,7 +502,7 @@ LISTPM()
                        IF P!=0 DO WRITES("\n\t");
                  }
                  NEWLINE(); }
-         OR EMPTY = EMPTY + 1;
+         else EMPTY = EMPTY + 1;
       WRITEF("Empty buckets = %d\n", (int)EMPTY);  }
 
 WORD
@@ -559,9 +559,9 @@ ELEM(LIST X, WORD N)
 
 void
 PRINTOB(LIST X) //or ATOM
-{  if ( X==NIL    ) WRITES("NIL"); OR
-   if ( ISATOM(X) ) WRITEF("\"%s\"",PRINTNAME((ATOM)X)); OR
-   if ( ISNUM(X)  ) WRITEN(GETNUM(X)); OR
+{  if ( X==NIL    ) WRITES("NIL"); else
+   if ( ISATOM(X) ) WRITEF("\"%s\"",PRINTNAME((ATOM)X)); else
+   if ( ISNUM(X)  ) WRITEN(GETNUM(X)); else
    if ( ISCONS(X)
    ) {  WRCH('(');
            WHILE ISCONS(X)
@@ -570,7 +570,7 @@ PRINTOB(LIST X) //or ATOM
                  X=TL(X);  }
            PRINTOB(X);
            WRCH(')');  }
-   OR WRITEF("<%p>", X);
+   else WRITEF("<%p>", X);
 }
 
 
@@ -588,8 +588,8 @@ ISOKCONS(LIST P)
       // (ONLY EVEN ADDRESSES IN LISTSPACE COUNT)
       if ( ((char *)P - (char *)CONSBASE) % sizeof(struct LIST) == 0
       ) return P;
-      OR { WRITEF("\nHD() or TL() called on ODD address %p\n", P); }
-   OR { WRITEF("\nHD() or TL() called on %p not in CONS space\n", P); }
+      else { WRITEF("\nHD() or TL() called on ODD address %p\n", P); }
+   else { WRITEF("\nHD() or TL() called on %p not in CONS space\n", P); }
    return (LIST)0; // Cause segfault in caller
 }
 #endif

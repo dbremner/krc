@@ -100,10 +100,10 @@ READTOKEN(void)
    DO {  if ( CH=='.'
          ) {  THE_NUM==0;
                  TERMINATOR=='.';  }
-         OR {  UNRDCH(CH) ; THE_NUM=READN();  }
+         else {  UNRDCH(CH) ; THE_NUM=READN();  }
          if ( TOKENS==NIL && TERMINATOR=='.'  //LINE NUMBERS (ONLY) ARE
          ) THE_DECIMALS==READ_DECIMALS();  //ALLOWED A DECIMAL PART
-         OR UNRDCH(CH);
+         else UNRDCH(CH);
          return CONS(CONST,STONUM(THE_NUM)); }
 #else
    IF isdigit(CH)
@@ -143,7 +143,7 @@ READTOKEN(void)
                                       BUFCH(n);
                                       UNRDCH(CH); }
                     } }
-               OR BUFCH(CH);
+               else BUFCH(CH);
                CH=RDCH();  }
          A=PACKBUFFER();
          return CH!='"' ? (TOKEN)BADTOKEN : CONS(CONST,(LIST)A);  }
@@ -169,13 +169,13 @@ READTOKEN(void)
                          CH=RDCH(); } while (CH=='\n');
                                     //IGNORE BLANK LINES
                  }
-            OR {  BUFCH(CH); CH=RDCH();  }
+            else {  BUFCH(CH); CH=RDCH();  }
          if ( CH==EOF
          ) { WRITEF("%s :- ...",PRINTNAME((ATOM)SUBJECT)),
 	        WRITES(" missing \";\"\n");
 	        COMMENTFLAG--;
 	        SYNTAX(); }
-         OR C=CONS((LIST)PACKBUFFER(),C);
+         else C=CONS((LIST)PACKBUFFER(),C);
          return REVERSE(C); }
    IF CH==CH2
    DO {  IF CH=='+' DO return PLUSPLUS_SY;
@@ -241,7 +241,7 @@ PEEKALPHA()
 
 void
 WRITETOKEN(TOKEN T)
-{  if ( T<(TOKEN)256 && T>(TOKEN)32 ) WRCH((WORD)T); OR
+{  if ( T<(TOKEN)256 && T>(TOKEN)32 ) WRCH((WORD)T); else
    switch(  (WORD)T )
    {  case (WORD)'\n':   WRITES("newline"); break; 
       case (WORD)PLUSPLUS_SY: WRITES("++"); break; 
@@ -254,14 +254,14 @@ WRITETOKEN(TOKEN T)
       case (WORD)BACKARROW_SY: WRITES("<-"); break; 
       case (WORD)DOTDOT_SY: WRITES(".."); break; 
       default: if ( !(ISCONS(T) && (HD(T)==IDENT || HD(T)==CONST))
-	       ) WRITEF("<UNKNOWN TOKEN<%p>>",T); OR
+	       ) WRITEF("<UNKNOWN TOKEN<%p>>",T); else
 	       if ( HD(T)==IDENT
 	       ) WRITES(PRINTNAME((ATOM)(
 			ISCONS(TL(T)) && HD(TL(T))==(LIST)ALPHA
-				 ? TL(TL(T)) : TL(T)))); OR
+				 ? TL(TL(T)) : TL(T)))); else
 	       if ( ISNUM(TL(T))
 	       ) WRITEN(GETNUM(TL(T)));
-	       OR WRITEF("\"%s\"",PRINTNAME((ATOM)TL(T)));
+	       else WRITEF("\"%s\"",PRINTNAME((ATOM)TL(T)));
 }  }
 
 BOOL
