@@ -32,7 +32,7 @@ typedef WORD BOOL;	// Not BCPL but...
 //#define RETURN return;
 //#define TEST if (			// Use: TEST p THEN x; OR y;
 //#define THEN )
-#define OR else
+//#define OR else
 //#define FOR for
 #define UNLESS if(!(			// Use: UNLESS x DO foo;
 #define IF if ((			// Use: IF x DO bar;
